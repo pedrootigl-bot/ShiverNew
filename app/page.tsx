@@ -303,7 +303,13 @@ export default function HomePage() {
             </div>
             <div className="pay-methods">
               {PAY_METHODS.map((method) => (
-                <Reveal key={method.name} variant="scale">
+                <Reveal
+                  key={method.name}
+                  solo
+                  variant="rise"
+                  enterRatio={0.28}
+                  rootMargin="0px 0px -22% 0px"
+                >
                   <article className="pay-method hover-lift">
                     <Image
                       src={method.image}
@@ -311,7 +317,7 @@ export default function HomePage() {
                       width={400}
                       height={400}
                       quality={65}
-                      sizes="(max-width: 900px) 44vw, 180px"
+                      sizes="(max-width: 900px) 92vw, 180px"
                       loading="lazy"
                     />
                     <h3>{method.name}</h3>
@@ -469,7 +475,7 @@ export default function HomePage() {
       <section className="section cta-journey" aria-labelledby="cta-journey-title">
         <div className="wrap">
           <RevealGroup className="cta-journey-inner">
-            <Reveal variant="left">
+            <Reveal variant="left" className="cta-journey-pills">
               <div className="cta-pills">
                 {[
                   "Vantagens desde o primeiro trade",
@@ -488,17 +494,17 @@ export default function HomePage() {
                 ))}
               </div>
             </Reveal>
-            <Reveal variant="right">
-              <div className="cta-journey-copy">
-                <h2 id="cta-journey-title">Seja o trader que trilha a jornada premium com eficiência</h2>
-                <div className="cta-journey-actions">
-                  <a className="btn btn-cta btn-lg" href={SITE.trade.trial}>
-                    Testar grátis <span aria-hidden>→</span>
-                  </a>
-                  <a className="btn btn-white btn-lg" href={SITE.trade.login}>
-                    Entrar
-                  </a>
-                </div>
+            <Reveal variant="right" className="cta-journey-title">
+              <h2 id="cta-journey-title">Seja o trader que trilha a jornada premium com eficiência</h2>
+            </Reveal>
+            <Reveal variant="right" className="cta-journey-actions-wrap">
+              <div className="cta-journey-actions">
+                <a className="btn btn-cta btn-lg" href={SITE.trade.trial}>
+                  Testar grátis <span aria-hidden>→</span>
+                </a>
+                <a className="btn btn-white btn-lg" href={SITE.trade.login}>
+                  Entrar
+                </a>
               </div>
             </Reveal>
           </RevealGroup>

@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ParallaxRoot } from "@/components/ParallaxRoot";
 import { PageFade } from "@/components/PageFade";
+import { BlogRouteLoading } from "@/components/BlogRouteLoading";
 import { Disclaimer } from "@/components/Disclaimer";
 import { defaultMetadata, siteJsonLd } from "@/lib/seo";
 import "./globals.css";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <Disclaimer />
         <Header />
+        <BlogRouteLoading />
         <ParallaxRoot>
           <main id="conteudo">
             <PageFade>{children}</PageFade>

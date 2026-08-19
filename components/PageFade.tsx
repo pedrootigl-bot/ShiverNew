@@ -33,9 +33,11 @@ export function PageFade({ children }: { children: ReactNode }) {
       firstLoad.current = false;
       return;
     }
-    if (pathname.startsWith("/blog")) return;
     el.classList.add("page-enter");
-    const id = window.setTimeout(() => el.classList.remove("page-enter"), 120);
+    if (pathname.startsWith("/blog")) el.classList.add("blog-enter");
+    const id = window.setTimeout(() => {
+      el.classList.remove("page-enter", "blog-enter");
+    }, pathname.startsWith("/blog") ? 360 : 220);
     return () => window.clearTimeout(id);
   }, [pathname]);
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12) {
+export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12, rootMargin = "0px") {
   const ref = useRef<T>(null);
   const [on, setOn] = useState(false);
 
@@ -23,12 +23,12 @@ export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12) {
         }
         if (!entry.isIntersecting) setOn(false);
       },
-      { threshold: enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1] },
+      { threshold: enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1], rootMargin },
     );
 
     io.observe(el);
     return () => io.disconnect();
-  }, [enterRatio]);
+  }, [enterRatio, rootMargin]);
 
   return { ref, on };
 }
