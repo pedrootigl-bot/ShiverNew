@@ -1,0 +1,236 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { posts, postsByDate } from "@/lib/blog";
+import { warmBlogCache } from "@/lib/blog-bodies";
+import { NAV, SITE } from "@/lib/site";
+
+export function Header() {
+  const [open, setOpen] = useState(false);
+  const [blogOpen, setBlogOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const blogRef = useRef<HTMLDivElement>(null);
+  const hoverTimer = useRef(0);
+  const articles = postsByDate();
+  const compactNav = "(max-width: 1100px)";
+
+  function prefetchBlog() {
+    router.prefetch("/blog");
+    for (const post of posts) router.prefetch(`/blog/${post.slug}`);
+  }
+
+  function closeMenus() {
+    setOpen(false);
+    setBlogOpen(false);
+  }
+
+  function scrollToHash(hash: string) {
+    const id = hash.replace(/^#/, "");
+    const target = document.getElementById(id);
+    if (!target) return false;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    return true;
+  }
+
+  function onHashClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    closeMenus();
+    if (!href.startsWith("/#")) return;
+    if (pathname !== "/") return;
+    const hash = href.slice(1);
+    if (!scrollToHash(hash)) return;
+    event.preventDefault();
+    window.history.pushState(null, "", href);
+  }
+
+  function openBlogSoon() {
+    if (window.matchMedia(compactNav).matches) return;
+    prefetchBlog();
+    window.clearTimeout(hoverTimer.current);
+    setBlogOpen(true);
+  }
+
+  function closeBlogSoon() {
+    if (window.matchMedia(compactNav).matches) return;
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setBlogOpen(false), 80);
+  }
+
+  useEffect(() => {
+    if (!blogOpen) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!blogRef.current?.contains(event.target as Node)) setBlogOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setBlogOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [blogOpen]);
+
+  useEffect(() => {
+    closeMenus();
+    window.clearTimeout(hoverTimer.current);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle("nav-open", open);
+    return () => document.body.classList.remove("nav-open");
+  }, [open]);
+
+  useEffect(() => {
+    warmBlogCache();
+    prefetchBlog();
+    const ric = window.requestIdleCallback?.bind(window);
+    if (ric) {
+      const id = ric(prefetchBlog, { timeout: 200 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    return undefined;
+  }, [router]);
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(() => {
+      document.getElementById(hash)?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
+
+  return (
+    <header className="header">
+      {open ? (
+        <button className="nav-backdrop" type="button" aria-label="Fechar menu" onClick={() => setOpen(false)} />
+      ) : null}
+      <div className="header-pill">
+        <Link href="/#inicio" className="logo" aria-label="Shiver Broker" onClick={(event) => onHashClick(event, "/#inicio")}>
+          <img src="/media/R6Lgnh9bXoiPlyDe7JyGXOz604.png" alt="Shiver Broker" width={34} height={34} />
+          <div>
+            <span>Shiver</span>
+            <small>BROKER</small>
+          </div>
+        </Link>
+        <nav className={`nav${open ? " open" : ""}`} aria-label="Principal">
+          {NAV.map((item) =>
+            item.href === "/blog" ? (
+              <div
+                key={item.href}
+                className={`nav-drop${blogOpen ? " open" : ""}`}
+                ref={blogRef}
+                onPointerEnter={openBlogSoon}
+                onPointerLeave={closeBlogSoon}
+                onFocus={() => {
+                  if (!window.matchMedia(compactNav).matches) {
+                    prefetchBlog();
+                    setBlogOpen(true);
+                  }
+                }}
+                onBlur={(event) => {
+                  if (event.currentTarget.contains(event.relatedTarget as Node)) return;
+                  if (!window.matchMedia(compactNav).matches) setBlogOpen(false);
+                }}
+              >
+                <Link
+                  href="/blog"
+                  className={`nav-drop-btn${pathname.startsWith("/blog") ? " current" : ""}`}
+                  prefetch
+                  aria-expanded={blogOpen}
+                  aria-haspopup="menu"
+                  aria-controls="blog-menu"
+                  data-nav-toggle={open || undefined}
+                  onClick={(event) => {
+                    if (!open) {
+                      closeMenus();
+                      return;
+                    }
+                    event.preventDefault();
+                    prefetchBlog();
+                    setBlogOpen((value) => !value);
+                  }}
+                >
+                  {item.label}
+                  <span className={`nav-caret${blogOpen ? " up" : ""}`} aria-hidden>
+                    ▾
+                  </span>
+                </Link>
+                <div className="nav-menu" id="blog-menu" role="menu">
+                  {articles.map((post) => {
+                    const href = `/blog/${post.slug}`;
+                    const current = pathname === href;
+                    return (
+                      <Link
+                        key={post.slug}
+                        href={href}
+                        prefetch
+                        role="menuitem"
+                        aria-current={current ? "page" : undefined}
+                        className={current ? "current" : undefined}
+                        onPointerDown={() => router.prefetch(href)}
+                        onClick={closeMenus}
+                      >
+                        <strong>{post.navTitle}</strong>
+                        <small>{post.teaser}</small>
+                      </Link>
+                    );
+                  })}
+                  <Link
+                    href="/blog"
+                    prefetch
+                    role="menuitem"
+                    className={pathname === "/blog" ? "current nav-menu-all" : "nav-menu-all"}
+                    aria-current={pathname === "/blog" ? "page" : undefined}
+                    onPointerDown={() => router.prefetch("/blog")}
+                    onClick={closeMenus}
+                  >
+                    <strong>Ver todos os artigos</strong>
+                    <small>O que quem opera quer ler agora</small>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <Link key={item.href} href={item.href} onClick={(event) => onHashClick(event, item.href)}>
+                {item.label}
+              </Link>
+            ),
+          )}
+          <a className="btn btn-ghost nav-login" href={SITE.trade.login} onClick={closeMenus}>
+            Entrar
+          </a>
+        </nav>
+        <div className="header-cta">
+          <a className="btn btn-ghost" href={SITE.trade.login}>
+            Entrar
+          </a>
+          <a className="btn btn-primary" href={SITE.trade.register}>
+            Abrir conta
+          </a>
+          <button
+            className="menu-btn"
+            type="button"
+            aria-label={open ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={open}
+            onClick={() => {
+              prefetchBlog();
+              setOpen((value) => !value);
+            }}
+          >
+            {open ? "✕" : "☰"}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}

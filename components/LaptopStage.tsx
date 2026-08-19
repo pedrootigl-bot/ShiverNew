@@ -1,0 +1,34 @@
+"use client";
+
+import Image from "next/image";
+import { useGroupReveal } from "@/components/RevealGroup";
+import { useInViewReplay } from "@/lib/useInViewReplay";
+
+export function LaptopStage() {
+  const grouped = useGroupReveal();
+  const solo = useInViewReplay<HTMLDivElement>(0.28);
+  const on = grouped !== null ? grouped : solo.on;
+
+  return (
+    <div className={`laptop-stage${on ? " open" : ""}`} ref={grouped !== null ? undefined : solo.ref} data-parallax="0.05">
+      <Image className="crystal c1" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.png" alt="" width={230} height={230} quality={65} sizes="230px" loading="lazy" />
+      <Image className="crystal c2" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.png" alt="" width={210} height={210} quality={65} sizes="210px" loading="lazy" />
+      <div className="laptop-scene">
+        <div className="laptop">
+          <div className="laptop-lid">
+            <Image
+              src="/media/Srhe0Ld9LN4eJAxMtjy6N4AJ8M.png"
+              alt="Plataforma da Shiver Broker no notebook"
+              width={1520}
+              height={900}
+              quality={70}
+              sizes="100vw"
+              loading="lazy"
+            />
+          </div>
+          <div className="laptop-base" />
+        </div>
+      </div>
+    </div>
+  );
+}
