@@ -55,9 +55,9 @@ export const ASSETS = [
 export type AssetTicker = (typeof ASSETS)[number]["ticker"];
 
 export const PAY_METHODS = [
-  { name: "Crypto", text: "Bitcoin, Ethereum e outros ativos digitais.", image: "/media/pay-crypto-mark.png" },
-  { name: "Cartão", text: "Depósito direto, sem espera teatral.", image: "/media/pay-card.png" },
-  { name: "Internacional", text: "Liquidez que não depende do fuso.", image: "/media/pay-globe.png" },
+  { name: "Crypto", text: "Bitcoin, Ethereum e outros ativos digitais.", image: "/media/pay-crypto-mark.webp" },
+  { name: "Cartão", text: "Depósito direto, sem espera teatral.", image: "/media/pay-card.webp" },
+  { name: "Internacional", text: "Liquidez que não depende do fuso.", image: "/media/pay-globe.webp" },
 ] as const;
 
 export const TESTIMONIALS_A = [

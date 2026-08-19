@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/lib/blog";
+import { canPrefetch } from "@/lib/network";
 
 export function PostCard({ post, featured = false }: { post: Post; featured?: boolean }) {
   const router = useRouter();
@@ -12,8 +13,10 @@ export function PostCard({ post, featured = false }: { post: Post; featured?: bo
     <Link
       className={`post-card${featured ? " featured" : ""}`}
       href={href}
-      prefetch
-      onPointerDown={() => router.prefetch(href)}
+      prefetch={false}
+      onPointerDown={() => {
+        if (canPrefetch()) router.prefetch(href);
+      }}
     >
       <p className="meta">
         {post.category} · {post.displayDate}

@@ -6,6 +6,7 @@ import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
 import { getPost, morePosts, type PostSlug } from "@/lib/blog";
 import { hasPostBody, postBodies } from "@/lib/blog-bodies";
+import { canPrefetch } from "@/lib/network";
 import { SITE } from "@/lib/site";
 
 export function PostArticle({ slug }: { slug: string }) {
@@ -21,7 +22,13 @@ export function PostArticle({ slug }: { slug: string }) {
       <article className="blog-page wrap">
         <Reveal variant="left">
           <p className="blog-back">
-            <Link href="/blog" prefetch onPointerDown={() => router.prefetch("/blog")}>
+            <Link
+              href="/blog"
+              prefetch={false}
+              onPointerDown={() => {
+                if (canPrefetch()) router.prefetch("/blog");
+              }}
+            >
               ← Voltar ao blog
             </Link>
           </p>
@@ -58,8 +65,10 @@ export function PostArticle({ slug }: { slug: string }) {
                     <Link
                       className="post-card"
                       href={href}
-                      prefetch
-                      onPointerDown={() => router.prefetch(href)}
+                      prefetch={false}
+                      onPointerDown={() => {
+                        if (canPrefetch()) router.prefetch(href);
+                      }}
                     >
                       <p className="meta">
                         {item.category} · {item.displayDate}

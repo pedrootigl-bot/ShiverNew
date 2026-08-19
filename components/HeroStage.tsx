@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { isSlowNetwork } from "@/lib/network";
 import { SITE } from "@/lib/site";
 
 export function HeroStage() {
   const wrap = useRef<HTMLElement>(null);
+  const [showFin, setShowFin] = useState(false);
+
+  useEffect(() => {
+    if (!isSlowNetwork()) setShowFin(true);
+  }, []);
 
   useEffect(() => {
     const el = wrap.current;
@@ -60,15 +67,18 @@ export function HeroStage() {
       <div className="hero-stage">
         <HeroVideo />
         <div className="hero-vignette" />
-        <img
-          className="float-layer fin"
-          src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.png"
-          alt=""
-          width={1180}
-          height={700}
-          decoding="async"
-          fetchPriority="low"
-        />
+        {showFin ? (
+          <Image
+            className="float-layer fin"
+            src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
+            alt=""
+            width={1180}
+            height={700}
+            quality={70}
+            sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
+            loading="lazy"
+          />
+        ) : null}
         <div className="hero-content">
           <div className="hero-left">
             <h1>Shiver Broker — o oceano está cheio. Os tubarões já escolheram o lado!</h1>
@@ -92,25 +102,21 @@ export function HeroStage() {
 
 function HeroVideo() {
   const ref = useRef<HTMLVideoElement>(null);
+  const [playVideo, setPlayVideo] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (isSlowNetwork()) return;
+    setPlayVideo(true);
+  }, []);
 
   useEffect(() => {
     const video = ref.current;
-    if (!video) return;
-    video.setAttribute("fetchpriority", "high");
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      video.pause();
-      return;
-    }
+    if (!video || !playVideo) return;
 
     const play = () => {
       video.play().catch(() => undefined);
     };
-
-    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-    if (connection?.saveData || connection?.effectiveType === "slow-2g" || connection?.effectiveType === "2g") {
-      video.preload = "metadata";
-    }
 
     play();
     const onVis = () => {
@@ -119,21 +125,24 @@ function HeroVideo() {
     };
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
-  }, []);
+  }, [playVideo]);
 
   return (
     <div className="hero-video">
-      <video
-        ref={ref}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/media/hero-bg.jpg"
-      >
-        <source src="/media/hero-bg.mp4" type="video/mp4" />
-      </video>
+      <Image
+        className="hero-poster"
+        src="/media/hero-bg.jpg"
+        alt=""
+        fill
+        priority
+        quality={60}
+        sizes="100vw"
+      />
+      {playVideo ? (
+        <video ref={ref} autoPlay muted loop playsInline preload="metadata" poster="/media/hero-bg.jpg">
+          <source src="/media/hero-bg.mp4" type="video/mp4" />
+        </video>
+      ) : null}
     </div>
   );
 }

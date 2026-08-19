@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { isSlowNetwork } from "@/lib/network";
 
 export function ParallaxRoot({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (isSlowNetwork()) return;
     const nodes = () => document.querySelectorAll<HTMLElement>("[data-parallax]");
     let ticking = false;
     const update = () => {

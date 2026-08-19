@@ -49,7 +49,7 @@ export function Footer() {
             <ul>
               {FOOTER_LEGAL.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} prefetch>
+                  <Link href={item.href} prefetch={false}>
                     {item.label}
                   </Link>
                 </li>

@@ -3,8 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 import { PostPage } from "@/components/PostPage";
-import { posts } from "@/lib/blog";
-import { warmBlogCache } from "@/lib/blog-bodies";
+import { canPrefetch } from "@/lib/network";
 
 function sameOriginUrl(href: string) {
   try {
@@ -42,22 +41,17 @@ export function PageFade({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
-    warmBlogCache();
     void PostPage;
+    if (!canPrefetch()) return;
     const prefetch = () => {
-      router.prefetch("/legal/terms");
-      router.prefetch("/legal/privacy");
-      router.prefetch("/legal/terms-south-africa");
       router.prefetch("/blog");
-      for (const post of posts) router.prefetch(`/blog/${post.slug}`);
     };
-    prefetch();
     const ric = window.requestIdleCallback?.bind(window);
     if (ric) {
-      const id = ric(prefetch, { timeout: 400 });
+      const id = ric(prefetch, { timeout: 2500 });
       return () => window.cancelIdleCallback?.(id);
     }
-    const id = window.setTimeout(prefetch, 1);
+    const id = window.setTimeout(prefetch, 1200);
     return () => window.clearTimeout(id);
   }, [router]);
 

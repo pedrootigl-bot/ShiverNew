@@ -11,18 +11,18 @@ export function LaptopStage() {
 
   return (
     <div className={`laptop-stage${on ? " open" : ""}`} ref={grouped !== null ? undefined : solo.ref} data-parallax="0.05">
-      <Image className="crystal c1" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.png" alt="" width={230} height={230} quality={65} sizes="230px" loading="lazy" />
-      <Image className="crystal c2" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.png" alt="" width={210} height={210} quality={65} sizes="210px" loading="lazy" />
+      <Image className="crystal c1" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={230} height={230} quality={65} sizes="230px" loading="lazy" />
+      <Image className="crystal c2" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={210} height={210} quality={65} sizes="210px" loading="lazy" />
       <div className="laptop-scene">
         <div className="laptop">
           <div className="laptop-lid">
             <Image
-              src="/media/Srhe0Ld9LN4eJAxMtjy6N4AJ8M.png"
+              src="/media/Srhe0Ld9LN4eJAxMtjy6N4AJ8M.webp"
               alt="Plataforma da Shiver Broker no notebook"
               width={1520}
               height={900}
-              quality={70}
-              sizes="100vw"
+              quality={65}
+              sizes="(max-width: 720px) 92vw, (max-width: 1100px) 80vw, 640px"
               loading="lazy"
             />
           </div>

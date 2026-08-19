@@ -1,21 +1,24 @@
 import Image from "next/image";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { ASSETS, PAY_METHODS, SITE, TESTIMONIALS_A, TESTIMONIALS_B } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { HeroStage } from "@/components/HeroStage";
 import { BlurTitle } from "@/components/BlurTitle";
-import { MarketBoard } from "@/components/MarketBoard";
 import { AssetLogo } from "@/components/AssetLogo";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
 
-const LaptopStage = dynamic(
+const LaptopStage = nextDynamic(
   () => import("@/components/LaptopStage").then((mod) => ({ default: mod.LaptopStage })),
   { ssr: true },
 );
-const AssetsGlobe = dynamic(
+const AssetsGlobe = nextDynamic(
   () => import("@/components/AssetsGlobe").then((mod) => ({ default: mod.AssetsGlobe })),
+  { ssr: true },
+);
+const MarketBoard = nextDynamic(
+  () => import("@/components/MarketBoard").then((mod) => ({ default: mod.MarketBoard })),
   { ssr: true },
 );
 
@@ -101,10 +104,11 @@ function Marquee({
   );
 }
 
+export const dynamic = "force-static";
+
 export default function HomePage() {
   return (
     <>
-      <link rel="preload" as="video" href="/media/hero-bg.mp4" type="video/mp4" />
       <HeroStage />
 
       <section className="section sec-1" id="plataforma" aria-labelledby="titulo-corretora">
@@ -131,36 +135,40 @@ export default function HomePage() {
       <section className="section payout">
         <div className="wrap">
           <RevealGroup className="payout-grid">
-            <Reveal variant="clip">
+            <Reveal variant="up" className="payout-shot-cell">
               <div className="payout-shot">
                 <Image
-                  src="/media/rJQZ12SGIXCQR8iuLBkiKKM95rY.png"
+                  src="/media/payout-trader.webp"
                   alt="Visão do mercado de ativos na Shiver Broker"
-                  width={980}
-                  height={980}
-                  quality={70}
-                  sizes="(max-width: 900px) 100vw, 48vw"
+                  width={1080}
+                  height={1440}
+                  quality={75}
+                  sizes="(max-width: 1100px) min(380px, 100vw), 380px"
                   loading="lazy"
                 />
               </div>
             </Reveal>
-            <Reveal variant="right">
-              <div className="payout-copy">
-                <span className="payout-badge">Até 97% de payout em crypto</span>
-                <h2 className="payout-title">
-                  <span>O payout que o mercado</span>
-                  <span>comum não entrega.</span>
-                  <span>Acesso aberto agora.</span>
-                </h2>
-                <p>
-                  Mais de 392 ativos em forex, binárias, blitz e crypto. Enquanto proliferam corretoras iguais, quem busca
-                  payout alto e execução limpa vem para a Shiver. Abra a conta e veja o que os outros só comentam.
-                </p>
+            <div className="payout-right">
+              <Reveal variant="right" className="payout-copy-cell">
+                <div className="payout-copy">
+                  <span className="payout-badge">Até 97% de payout em crypto</span>
+                  <h2 className="payout-title">
+                    <span>O payout que o mercado</span>
+                    <span>comum não entrega.</span>
+                    <span>Acesso aberto agora.</span>
+                  </h2>
+                  <p>
+                    Mais de 392 ativos em forex, binárias, blitz e crypto. Enquanto proliferam corretoras iguais, quem busca
+                    payout alto e execução limpa vem para a Shiver. Abra a conta e veja o que os outros só comentam.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal variant="up" className="payout-cta-cell">
                 <a className="btn btn-cta" href={SITE.trade.register}>
                   Quero esse acesso <span aria-hidden>→</span>
                 </a>
-              </div>
-            </Reveal>
+              </Reveal>
+            </div>
           </RevealGroup>
         </div>
       </section>
@@ -183,8 +191,15 @@ export default function HomePage() {
                 ["Depósito e saque no seu ritmo", "Mais de 9 métodos. Entra rápido, sai rápido. Liquidez para quem não espera o sistema “processar depois”."],
                 ["Velocidade que o segundo decide", "Payout aparece, o atraso come o resultado. A Shiver foi feita para executar — não para carregar."],
                 ["Liquidez global, demanda real", "Opere de qualquer lugar, nos ativos que o mercado está pedindo hoje. O fluxo não espera o fuso horário."],
-              ].map(([title, text]) => (
-                <Reveal key={title} variant="scale">
+              ].map(([title, text], i) => (
+                <Reveal
+                  key={title}
+                  solo
+                  variant="rise"
+                  delay={i * 220}
+                  enterRatio={0.22}
+                  rootMargin="0px 0px -16% 0px"
+                >
                   <article className="card hover-lift">
                     <h3>{title}</h3>
                     <p>{text}</p>
@@ -219,8 +234,8 @@ export default function HomePage() {
                   <article className="vip-box">Premiações presenciais para quem já saiu da média</article>
                 </div>
                 <div className="vip-core">
-                  <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.png" alt="Shiver Broker VIP" width={420} height={420} quality={70} sizes="(max-width: 900px) 70vw, 280px" loading="lazy" />
-                  <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.png" alt="Seja VIP" width={280} height={280} quality={70} sizes="(max-width: 900px) 50vw, 180px" loading="lazy" />
+                  <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={420} height={420} quality={65} sizes="(max-width: 900px) 70vw, 280px" loading="lazy" />
+                  <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={280} height={280} quality={65} sizes="(max-width: 900px) 50vw, 180px" loading="lazy" />
                 </div>
                 <div className="vip-col vip-col-right">
                   <article className="vip-box">Ativos e modalidades liberados para quem performa mais</article>
@@ -290,12 +305,12 @@ export default function HomePage() {
               <Reveal variant="clip">
                 <div className="pay-hero">
                   <Image
-                    src="/media/pay-hero.png"
+                    src="/media/pay-hero.webp"
                     alt="Ilustração de saque na plataforma Shiver Broker"
                     width={1200}
                     height={675}
-                    quality={70}
-                    sizes="(max-width: 900px) 100vw, 48vw"
+                    quality={60}
+                    sizes="(max-width: 1100px) 100vw, 48vw"
                     loading="lazy"
                   />
                 </div>
@@ -317,7 +332,7 @@ export default function HomePage() {
                       width={400}
                       height={400}
                       quality={65}
-                      sizes="(max-width: 900px) 92vw, 180px"
+                      sizes="(max-width: 720px) 70vw, 180px"
                       loading="lazy"
                     />
                     <h3>{method.name}</h3>
@@ -334,42 +349,59 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section" id="mercado" aria-labelledby="titulo-mercado">
-        <RevealGroup>
-          <div className="wrap">
-            <Reveal variant="blur">
-              <h2 id="titulo-mercado">A plataforma que o trader destaque não empresta.</h2>
-              <p className="lead">
-                Gráfico, ordem e resultado no mesmo lugar. Rápida o suficiente para quem disputa o milissegundo — e clara
-                o bastante para você querer abrir a próxima operação agora.
-              </p>
-            </Reveal>
-          </div>
-          <Reveal variant="rise">
-            <div className="ticker" aria-label="Ativos com payout em evidência">
-              <div className="ticker-track">
-                {[...ASSETS, ...ASSETS].map((asset, i) => (
-                  <div className="tick" key={`${asset.ticker}-${i}`}>
-                    <span className="tick-logo">
-                      <AssetLogo ticker={asset.ticker} />
-                    </span>
-                    <div className="tick-copy">
-                      <b>{asset.name}</b>
-                      <small>{asset.ticker}</small>
-                      <div className="up">{asset.payout}</div>
-                      <small>Potencial de lucro</small>
+      <section className="section market-sec" id="mercado" aria-labelledby="titulo-mercado">
+        <div className="wrap">
+          <RevealGroup className="market-layout">
+            <Reveal variant="right" className="market-copy-cell">
+              <article className="market-copy-card">
+                <span className="payout-badge">Gráfico, ordem e payout</span>
+                <h2 id="titulo-mercado">A plataforma que o trader destaque não empresta.</h2>
+                <p className="lead">
+                  Gráfico, ordem e resultado no mesmo lugar. Rápida o suficiente para quem disputa o milissegundo — e clara
+                  o bastante para você querer abrir a próxima operação agora.
+                </p>
+                <ul className="market-legend" aria-label="Legenda do gráfico">
+                  <li>
+                    <i className="lg-up" aria-hidden />
+                    Alta nas últimas 24h
+                  </li>
+                  <li>
+                    <i className="lg-dn" aria-hidden />
+                    Queda nas últimas 24h
+                  </li>
+                  <li>
+                    <i className="lg-pay" aria-hidden />
+                    Payout em evidência
+                  </li>
+                </ul>
+                <div className="market-asset-legend" aria-label="Ativos com payout em evidência">
+                  {ASSETS.slice(0, 6).map((asset) => (
+                    <div className="market-asset-chip" key={asset.ticker}>
+                      <span className="tick-logo">
+                        <AssetLogo ticker={asset.ticker} />
+                      </span>
+                      <span>
+                        <b>{asset.name}</b>
+                        <small>{asset.payout}</small>
+                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-          <div className="wrap">
-            <Reveal variant="tilt">
+                  ))}
+                </div>
+                <div className="market-actions">
+                  <a className="btn btn-cta" href={SITE.trade.register}>
+                    Quero esse acesso <span aria-hidden>→</span>
+                  </a>
+                  <a className="btn btn-ghost" href={SITE.trade.trial}>
+                    Testar com $10.000
+                  </a>
+                </div>
+              </article>
+            </Reveal>
+            <Reveal variant="tilt" className="market-chart-cell">
               <MarketBoard />
             </Reveal>
-          </div>
-        </RevealGroup>
+          </RevealGroup>
+        </div>
       </section>
 
       <section className="section globe-sec">
@@ -395,7 +427,7 @@ export default function HomePage() {
             src="/media/omy1oeY65x0sQauj2yrxvOOhMbc.png"
             alt=""
             fill
-            quality={45}
+            quality={75}
             sizes="100vw"
             loading="lazy"
           />
@@ -431,7 +463,7 @@ export default function HomePage() {
             </article>
             <Image
               className="phone-center float-soft"
-              src="/media/hFx1A5DWkIK1NNFwYsHEPjAUW0.png"
+              src="/media/hFx1A5DWkIK1NNFwYsHEPjAUW0.webp"
               alt="Aplicativo Shiver Broker no celular"
               width={380}
               height={780}

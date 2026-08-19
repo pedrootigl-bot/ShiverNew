@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { posts, postsByDate } from "@/lib/blog";
-import { warmBlogCache } from "@/lib/blog-bodies";
+import { postsByDate } from "@/lib/blog";
+import { canPrefetch } from "@/lib/network";
 import { NAV, SITE } from "@/lib/site";
 
 export function Header() {
@@ -18,8 +18,8 @@ export function Header() {
   const compactNav = "(max-width: 1100px)";
 
   function prefetchBlog() {
+    if (!canPrefetch()) return;
     router.prefetch("/blog");
-    for (const post of posts) router.prefetch(`/blog/${post.slug}`);
   }
 
   function closeMenus() {
@@ -86,11 +86,10 @@ export function Header() {
   }, [open]);
 
   useEffect(() => {
-    warmBlogCache();
-    prefetchBlog();
+    if (!canPrefetch()) return;
     const ric = window.requestIdleCallback?.bind(window);
     if (ric) {
-      const id = ric(prefetchBlog, { timeout: 200 });
+      const id = ric(() => router.prefetch("/blog"), { timeout: 2500 });
       return () => window.cancelIdleCallback?.(id);
     }
     return undefined;
@@ -143,10 +142,10 @@ export function Header() {
                   if (!window.matchMedia(compactNav).matches) setBlogOpen(false);
                 }}
               >
-                <Link
-                  href="/blog"
-                  className={`nav-drop-btn${pathname.startsWith("/blog") ? " current" : ""}`}
-                  prefetch
+                  <Link
+                    href="/blog"
+                    className={`nav-drop-btn${pathname.startsWith("/blog") ? " current" : ""}`}
+                    prefetch={false}
                   aria-expanded={blogOpen}
                   aria-haspopup="menu"
                   aria-controls="blog-menu"
@@ -174,11 +173,13 @@ export function Header() {
                       <Link
                         key={post.slug}
                         href={href}
-                        prefetch
+                        prefetch={false}
                         role="menuitem"
                         aria-current={current ? "page" : undefined}
                         className={current ? "current" : undefined}
-                        onPointerDown={() => router.prefetch(href)}
+                        onPointerDown={() => {
+                          if (canPrefetch()) router.prefetch(href);
+                        }}
                         onClick={closeMenus}
                       >
                         <strong>{post.navTitle}</strong>
@@ -188,11 +189,13 @@ export function Header() {
                   })}
                   <Link
                     href="/blog"
-                    prefetch
+                    prefetch={false}
                     role="menuitem"
                     className={pathname === "/blog" ? "current nav-menu-all" : "nav-menu-all"}
                     aria-current={pathname === "/blog" ? "page" : undefined}
-                    onPointerDown={() => router.prefetch("/blog")}
+                    onPointerDown={() => {
+                      if (canPrefetch()) router.prefetch("/blog");
+                    }}
                     onClick={closeMenus}
                   >
                     <strong>Ver todos os artigos</strong>

@@ -10,10 +10,12 @@ import { defaultMetadata, siteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
   weight: ["300", "700"],
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = defaultMetadata;
