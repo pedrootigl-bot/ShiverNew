@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { posts, type Post } from "@/lib/blog";
 import { SITE } from "@/lib/site";
 
 export const SEO = {
   title: "Shiver Broker | Corretora Forex, Crypto e Opções",
   titleHome: "Shiver Broker | Corretora dos Grandes Tubarões — Forex, Crypto e Opções",
+  titleBlog: "Blog Shiver Broker | Forex, Crypto, VIP e Como Investir",
   description: SITE.description,
   keywords: [
     "Shiver",
@@ -33,57 +35,113 @@ export const SEO = {
   },
 } as const;
 
-export function siteJsonLd() {
+const orgId = `${SITE.url}/#organization`;
+const brandId = `${SITE.url}/#brand`;
+const siteId = `${SITE.url}/#website`;
+const serviceId = `${SITE.url}/#service`;
+const logoUrl = `${SITE.url}/icon.png`;
+const ogUrl = `${SITE.url}/og.png`;
+
+function organizationNode() {
+  return {
+    "@type": "Organization",
+    "@id": orgId,
+    name: "Shiver Broker",
+    legalName: "Sun Wave LLC",
+    alternateName: ["Shiver", "ShiverBroker", "Corretora Shiver", "Shiver Broker corretora"],
+    url: SITE.url,
+    email: SITE.email,
+    logo: {
+      "@type": "ImageObject",
+      url: logoUrl,
+      width: 512,
+      height: 512,
+    },
+    image: ogUrl,
+    slogan: SITE.tagline,
+    foundingLocation: {
+      "@type": "Place",
+      name: "Charlestown, Nevis",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Charlestown",
+      addressRegion: "Nevis",
+      addressCountry: "KN",
+    },
+    sameAs: ["https://trade.shiverbroker.com", SITE.url],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: SITE.email,
+      contactType: "customer support",
+      availableLanguage: ["Portuguese", "English"],
+    },
+    knowsAbout: ["Forex", "Cryptocurrency trading", "Binary options"],
+  };
+}
+
+function brandNode() {
+  return {
+    "@type": "Brand",
+    "@id": brandId,
+    name: "Shiver",
+    alternateName: ["Shiver Broker", "ShiverBroker"],
+    url: SITE.url,
+    logo: logoUrl,
+  };
+}
+
+function websiteNode() {
+  return {
+    "@type": "WebSite",
+    "@id": siteId,
+    url: SITE.url,
+    name: "Shiver Broker",
+    alternateName: ["Shiver", "ShiverBroker.com"],
+    description: SITE.description,
+    inLanguage: "pt-BR",
+    publisher: { "@id": orgId },
+    about: { "@id": brandId },
+  };
+}
+
+function financialServiceNode() {
+  return {
+    "@type": "FinancialService",
+    "@id": serviceId,
+    name: "Shiver Broker",
+    alternateName: "Shiver",
+    description: SITE.description,
+    url: SITE.url,
+    image: ogUrl,
+    areaServed: "Worldwide",
+    availableLanguage: ["pt-BR", "en"],
+    brand: { "@id": brandId },
+    provider: { "@id": orgId },
+    parentOrganization: { "@id": orgId },
+    serviceType: ["Forex", "Cryptocurrency trading", "Binary options"],
+    offers: {
+      "@type": "Offer",
+      name: "Conta demo Shiver Broker",
+      description: "Teste a plataforma Shiver com $10.000 virtuais, sem depósito.",
+      url: SITE.trade.trial,
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+}
+
+export function organizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organizationNode(), brandNode(), websiteNode(), financialServiceNode()],
+  };
+}
+
+export function homeJsonLd() {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${SITE.url}/#organization`,
-        name: "Shiver Broker",
-        legalName: "Sun Wave LLC",
-        alternateName: ["Shiver", "ShiverBroker", "Corretora Shiver", "Shiver Broker corretora"],
-        url: SITE.url,
-        email: SITE.email,
-        logo: {
-          "@type": "ImageObject",
-          url: `${SITE.url}/icon.png`,
-          width: 512,
-          height: 512,
-        },
-        image: `${SITE.url}/og.png`,
-        slogan: SITE.tagline,
-        foundingLocation: {
-          "@type": "Place",
-          name: "Charlestown, Nevis",
-        },
-        sameAs: ["https://trade.shiverbroker.com", SITE.url],
-        contactPoint: {
-          "@type": "ContactPoint",
-          email: SITE.email,
-          contactType: "customer support",
-          availableLanguage: ["Portuguese", "English"],
-        },
-      },
-      {
-        "@type": "Brand",
-        "@id": `${SITE.url}/#brand`,
-        name: "Shiver",
-        alternateName: ["Shiver Broker", "ShiverBroker"],
-        url: SITE.url,
-        logo: `${SITE.url}/icon.png`,
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE.url}/#website`,
-        url: SITE.url,
-        name: "Shiver Broker",
-        alternateName: ["Shiver", "ShiverBroker.com"],
-        description: SITE.description,
-        inLanguage: "pt-BR",
-        publisher: { "@id": `${SITE.url}/#organization` },
-        about: { "@id": `${SITE.url}/#brand` },
-      },
       {
         "@type": "WebPage",
         "@id": `${SITE.url}/#webpage`,
@@ -91,35 +149,124 @@ export function siteJsonLd() {
         name: SEO.titleHome,
         description: SITE.description,
         inLanguage: "pt-BR",
-        isPartOf: { "@id": `${SITE.url}/#website` },
-        about: { "@id": `${SITE.url}/#organization` },
+        isPartOf: { "@id": siteId },
+        about: { "@id": orgId },
         primaryImageOfPage: {
           "@type": "ImageObject",
-          url: `${SITE.url}/og.png`,
+          url: ogUrl,
         },
+        mainEntity: { "@id": serviceId },
       },
       {
-        "@type": "FinancialService",
-        "@id": `${SITE.url}/#service`,
-        name: "Shiver Broker",
-        alternateName: "Shiver",
-        description: SITE.description,
-        url: SITE.url,
-        image: `${SITE.url}/og.png`,
-        areaServed: "Worldwide",
-        availableLanguage: ["pt-BR", "en"],
-        brand: { "@id": `${SITE.url}/#brand` },
-        provider: { "@id": `${SITE.url}/#organization` },
-        parentOrganization: { "@id": `${SITE.url}/#organization` },
-        serviceType: ["Forex", "Cryptocurrency trading", "Binary options"],
-        offers: {
-          "@type": "Offer",
-          name: "Conta demo Shiver Broker",
-          description: "Teste a plataforma Shiver com $10.000 virtuais, sem depósito.",
-          url: SITE.trade.trial,
-          price: "0",
-          priceCurrency: "USD",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
+        ],
+      },
+    ],
+  };
+}
+
+export function blogIndexJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${SITE.url}/blog#webpage`,
+        url: `${SITE.url}/blog`,
+        name: SEO.titleBlog,
+        description:
+          "Blog oficial da Shiver Broker: opções binárias, confiabilidade, programa VIP e o caminho da conta demo ao primeiro saque.",
+        inLanguage: "pt-BR",
+        isPartOf: { "@id": siteId },
+        about: { "@id": orgId },
+      },
+      {
+        "@type": "ItemList",
+        name: "Artigos do blog Shiver Broker",
+        itemListElement: posts.map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${SITE.url}/blog/${post.slug}`,
+          name: post.title,
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
+        ],
+      },
+    ],
+  };
+}
+
+export function articleJsonLd(post: Post) {
+  const url = `${SITE.url}/blog/${post.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: post.title,
+        datePublished: post.date,
+        dateModified: post.date,
+        url,
+        mainEntityOfPage: url,
+        inLanguage: "pt-BR",
+        articleSection: post.category,
+        author: { "@id": orgId },
+        publisher: {
+          "@type": "Organization",
+          "@id": orgId,
+          name: "Shiver Broker",
+          logo: {
+            "@type": "ImageObject",
+            url: logoUrl,
+            width: 512,
+            height: 512,
+          },
         },
+        description: post.description,
+        image: ogUrl,
+        about: { "@type": "Thing", name: "Shiver Broker" },
+        keywords: ["Shiver", "Shiver Broker", ...post.keywords].join(", "),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: url },
+        ],
+      },
+    ],
+  };
+}
+
+export function legalJsonLd(title: string, path: string, description: string) {
+  const url = `${SITE.url}${path}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: title,
+        description,
+        inLanguage: "pt-BR",
+        isPartOf: { "@id": siteId },
+        about: { "@id": orgId },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
+          { "@type": "ListItem", position: 2, name: title, item: url },
+        ],
       },
     ],
   };
@@ -157,6 +304,7 @@ export const defaultMetadata: Metadata = {
     images: [SEO.ogImage.url],
   },
   alternates: {
+    canonical: SITE.url,
     languages: {
       "pt-BR": SITE.url,
       "x-default": SITE.url,

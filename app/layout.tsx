@@ -1,34 +1,38 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { JsonLd } from "@/components/JsonLd";
 import { ParallaxRoot } from "@/components/ParallaxRoot";
 import { PageFade } from "@/components/PageFade";
-import { BlogRouteLoading } from "@/components/BlogRouteLoading";
 import { Disclaimer } from "@/components/Disclaimer";
-import { defaultMetadata, siteJsonLd } from "@/lib/seo";
+import { defaultMetadata, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
-  weight: ["300", "700"],
   preload: true,
   adjustFontFallback: true,
 });
 
 export const metadata: Metadata = defaultMetadata;
 
-const jsonLd = siteJsonLd();
+export const viewport: Viewport = {
+  themeColor: "#05070a",
+  width: "device-width",
+  initialScale: 1,
+};
+
+const jsonLd = organizationJsonLd();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={inter.variable} data-scroll-behavior="smooth">
       <head>
-        <link rel="icon" href="/icon.png" />
-        <meta name="theme-color" content="#05070a" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <link rel="dns-prefetch" href="https://trade.shiverbroker.com" />
+        <JsonLd data={jsonLd} />
       </head>
       <body className={inter.className}>
         <a className="skip" href="#conteudo">
@@ -36,12 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <Disclaimer />
         <Header />
-        <BlogRouteLoading />
-        <ParallaxRoot>
-          <main id="conteudo">
-            <PageFade>{children}</PageFade>
-          </main>
-        </ParallaxRoot>
+        <main id="conteudo">
+          <div id="page-fade" className="page-fade">
+            <PageFade />
+            <ParallaxRoot />
+            {children}
+          </div>
+        </main>
         <Footer />
       </body>
     </html>

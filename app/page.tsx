@@ -2,8 +2,11 @@ import Image from "next/image";
 import nextDynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { ASSETS, PAY_METHODS, SITE, TESTIMONIALS_A, TESTIMONIALS_B } from "@/lib/site";
-import { SEO } from "@/lib/seo";
+import { homeJsonLd, SEO } from "@/lib/seo";
 import { HeroStage } from "@/components/HeroStage";
+import { JsonLd } from "@/components/JsonLd";
+import { LazyAssetsGlobe } from "@/components/LazyAssetsGlobe";
+import { LazyMarketBoard } from "@/components/LazyMarketBoard";
 import { BlurTitle } from "@/components/BlurTitle";
 import { AssetLogo } from "@/components/AssetLogo";
 import { Reveal } from "@/components/Reveal";
@@ -13,14 +16,6 @@ const LaptopStage = nextDynamic(
   () => import("@/components/LaptopStage").then((mod) => ({ default: mod.LaptopStage })),
   { ssr: true },
 );
-const AssetsGlobe = nextDynamic(
-  () => import("@/components/AssetsGlobe").then((mod) => ({ default: mod.AssetsGlobe })),
-  { ssr: true },
-);
-const MarketBoard = nextDynamic(
-  () => import("@/components/MarketBoard").then((mod) => ({ default: mod.MarketBoard })),
-  { ssr: true },
-);
 
 export const metadata: Metadata = {
   title: { absolute: SEO.titleHome },
@@ -28,10 +23,19 @@ export const metadata: Metadata = {
   keywords: [...SEO.keywords],
   alternates: { canonical: SITE.url },
   openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Shiver Broker",
     title: SEO.titleHome,
     description: SEO.description,
     url: SITE.url,
     images: [SEO.ogImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SEO.titleHome,
+    description: SEO.description,
+    images: [SEO.ogImage.url],
   },
 };
 
@@ -66,22 +70,55 @@ function Stars({ value, uid }: { value: 4 | 4.5 | 5; uid: string }) {
 function Review({
   t,
   uid,
+  duplicate = false,
 }: {
   t: { quote: string; name: string; date: string; photo: string; stars: 4 | 4.5 | 5 };
   uid: string;
+  duplicate?: boolean;
 }) {
   return (
-    <article className="review">
+    <article className="review" aria-hidden={duplicate || undefined}>
       <Stars value={t.stars} uid={uid} />
       <p>“{t.quote}”</p>
       <footer>
-        <Image src={t.photo} alt="" width={48} height={48} quality={75} sizes="48px" loading="lazy" unoptimized />
+        <Image src={t.photo} alt={duplicate ? "" : t.name} width={48} height={48} quality={75} sizes="48px" loading="lazy" unoptimized />
         <div>
           <strong>{t.name}</strong>
           <small>{t.date}</small>
         </div>
       </footer>
     </article>
+  );
+}
+
+function AssetCarousel({
+  items,
+  reverse,
+}: {
+  items: readonly (typeof ASSETS)[number][];
+  reverse?: boolean;
+}) {
+  const row = [...items, ...items];
+  return (
+    <div className="asset-carousel">
+      <div className={`asset-carousel-track${reverse ? " rev" : ""}`}>
+        {row.map((asset, i) => (
+          <article
+            className="market-asset-chip"
+            key={`${asset.ticker}-${i}`}
+            aria-hidden={i >= items.length || undefined}
+          >
+            <span className="tick-logo">
+              <AssetLogo ticker={asset.ticker} />
+            </span>
+            <span>
+              <b>{asset.name}</b>
+              <small>{asset.payout}</small>
+            </span>
+          </article>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -97,7 +134,7 @@ function Marquee({
     <div className="review-marquee">
       <div className={`ticker-track ${reverse ? "rev" : ""}`}>
         {row.map((t, i) => (
-          <Review key={`${t.name}-${t.date}-${i}`} t={t} uid={`r${i}`} />
+          <Review key={`${t.name}-${t.date}-${i}`} t={t} uid={`r${i}`} duplicate={i >= items.length} />
         ))}
       </div>
     </div>
@@ -109,6 +146,7 @@ export const dynamic = "force-static";
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={homeJsonLd()} />
       <HeroStage />
 
       <section className="section sec-1" id="plataforma" aria-labelledby="titulo-corretora">
@@ -127,7 +165,13 @@ export default function HomePage() {
             <div className="sec-1-arc-wrap" aria-hidden>
               <div className="sec-1-arc" />
             </div>
-            <LaptopStage />
+            <LaptopStage>
+              <Reveal variant="up" delay={280} className="sec-1-cta">
+                <a className="btn btn-cta btn-lg" href={SITE.trade.register}>
+                  Quero operar na Shiver <span aria-hidden>→</span>
+                </a>
+              </Reveal>
+            </LaptopStage>
           </div>
         </RevealGroup>
       </section>
@@ -213,7 +257,7 @@ export default function HomePage() {
 
       <section className="section vip-sec" id="vip">
         <div className="vip-block">
-          <RevealGroup>
+          <RevealGroup replay>
             <div className="wrap">
               <Reveal variant="blur">
                 <div className="vip-head">
@@ -226,29 +270,41 @@ export default function HomePage() {
                 </div>
               </Reveal>
             </div>
-            <Reveal variant="scale">
-              <div className="vip-board">
+            <div className="vip-board">
                 <div className="vip-col">
-                  <article className="vip-box">A.I Financial™ na operação — o que a conta comum ainda não vê.</article>
-                  <article className="vip-box">Cupons e condições que não aparecem no cadastro padrão</article>
-                  <article className="vip-box">Premiações presenciais para quem já saiu da média</article>
+                  {[
+                    "A.I Financial™ na operação — o que a conta comum ainda não vê.",
+                    "Cupons e condições que não aparecem no cadastro padrão",
+                    "Premiações presenciais para quem já saiu da média",
+                  ].map((text, i) => (
+                    <Reveal key={text} variant="left" delay={1200 + i * 100}>
+                      <article className="vip-box">{text}</article>
+                    </Reveal>
+                  ))}
                 </div>
-                <div className="vip-core">
-                  <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={420} height={420} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" />
-                  <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={280} height={280} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" />
-                </div>
+                <Reveal variant="scale" delay={180} className="vip-core-cell">
+                  <div className="vip-core">
+                    <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={768} height={853} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" unoptimized />
+                    <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={768} height={863} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" unoptimized />
+                  </div>
+                </Reveal>
                 <div className="vip-col vip-col-right">
-                  <article className="vip-box">Ativos e modalidades liberados para quem performa mais</article>
-                  <article className="vip-box">Suporte gerenciado: você não entra na fila geral</article>
-                  <article className="vip-box">Saques com prioridade, limite e ritmo de quem opera pesado</article>
+                  {[
+                    "Ativos e modalidades liberados para quem performa mais",
+                    "Suporte gerenciado: você não entra na fila geral",
+                    "Saques com prioridade, limite e ritmo de quem opera pesado",
+                  ].map((text, i) => (
+                    <Reveal key={text} variant="right" delay={1200 + i * 100}>
+                      <article className="vip-box">{text}</article>
+                    </Reveal>
+                  ))}
                 </div>
-                <div className="vip-cta">
+                <Reveal variant="up" delay={1550} className="vip-cta">
                   <a className="btn btn-white" href={SITE.trade.trial}>
                     Quero as vantagens VIP <span aria-hidden>→</span>
                   </a>
-                </div>
+                </Reveal>
               </div>
-            </Reveal>
           </RevealGroup>
         </div>
       </section>
@@ -328,7 +384,7 @@ export default function HomePage() {
                   <article className="pay-method hover-lift">
                     <Image
                       src={method.image}
-                      alt=""
+                      alt={`Depósito via ${method.name} na Shiver Broker`}
                       width={400}
                       height={400}
                       quality={65}
@@ -374,18 +430,9 @@ export default function HomePage() {
                     Payout em evidência
                   </li>
                 </ul>
-                <div className="market-asset-legend" aria-label="Ativos com payout em evidência">
-                  {ASSETS.slice(0, 6).map((asset) => (
-                    <div className="market-asset-chip" key={asset.ticker}>
-                      <span className="tick-logo">
-                        <AssetLogo ticker={asset.ticker} />
-                      </span>
-                      <span>
-                        <b>{asset.name}</b>
-                        <small>{asset.payout}</small>
-                      </span>
-                    </div>
-                  ))}
+                <div className="asset-carousel-stack" aria-label="Ações com payout em evidência">
+                  <AssetCarousel items={ASSETS.slice(0, 6)} />
+                  <AssetCarousel items={ASSETS.slice(6)} reverse />
                 </div>
                 <div className="market-actions">
                   <a className="btn btn-cta" href={SITE.trade.register}>
@@ -398,7 +445,7 @@ export default function HomePage() {
               </article>
             </Reveal>
             <Reveal variant="tilt" className="market-chart-cell">
-              <MarketBoard />
+              <LazyMarketBoard />
             </Reveal>
           </RevealGroup>
         </div>
@@ -408,7 +455,7 @@ export default function HomePage() {
         <div className="wrap">
           <RevealGroup className="globe-layout">
             <Reveal className="globe-layout-globe" variant="scale">
-              <AssetsGlobe />
+              <LazyAssetsGlobe />
             </Reveal>
             <Reveal className="globe-layout-copy" variant="right">
               <h2>230+ ativos globais. A demanda do mundo, na sua tela.</h2>
@@ -424,10 +471,10 @@ export default function HomePage() {
       <section className="section app-sec" id="tecnologia">
         <div className="app-bg" aria-hidden>
           <Image
-            src="/media/omy1oeY65x0sQauj2yrxvOOhMbc.png"
+            src="/media/omy1oeY65x0sQauj2yrxvOOhMbc.webp"
             alt=""
             fill
-            quality={75}
+            quality={50}
             sizes="100vw"
             loading="lazy"
           />

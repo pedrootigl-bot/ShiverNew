@@ -43,13 +43,17 @@ export const NAV = [
 
 export const ASSETS = [
   { name: "Tesla", ticker: "TSLA", payout: "+94.2%" },
-  { name: "Netflix", ticker: "NFLX", payout: "+87.5%" },
+  { name: "Apple", ticker: "AAPL", payout: "+93.6%" },
   { name: "Microsoft", ticker: "MSFT", payout: "+91.8%" },
+  { name: "Amazon", ticker: "AMZN", payout: "+90.4%" },
+  { name: "Netflix", ticker: "NFLX", payout: "+87.5%" },
+  { name: "NVIDIA", ticker: "NVDA", payout: "+95.1%" },
+  { name: "Alphabet", ticker: "GOOGL", payout: "+92.8%" },
+  { name: "Meta", ticker: "META", payout: "+90.9%" },
   { name: "Alibaba", ticker: "BABA", payout: "+89.3%" },
   { name: "Spotify", ticker: "SPOT", payout: "+95.7%" },
   { name: "Disney", ticker: "DIS", payout: "+88.4%" },
-  { name: "Petróleo", ticker: "OIL", payout: "+92.1%" },
-  { name: "Ouro", ticker: "GOLD", payout: "+96.3%" },
+  { name: "AMD", ticker: "AMD", payout: "+89.8%" },
 ] as const;
 
 export type AssetTicker = (typeof ASSETS)[number]["ticker"];

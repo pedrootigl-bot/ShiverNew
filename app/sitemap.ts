@@ -2,14 +2,17 @@ import type { MetadataRoute } from "next";
 import { posts } from "@/lib/blog";
 import { SITE } from "@/lib/site";
 
+const LEGAL_UPDATED = new Date("2026-04-22");
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const latestPost = posts.reduce((newest, post) => (post.date > newest.date ? post : newest));
+  const latestPostDate = new Date(latestPost.date);
   const pages: MetadataRoute.Sitemap = [
-    { url: SITE.url, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE.url}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${SITE.url}/legal/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE.url}/legal/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${SITE.url}/legal/terms-south-africa`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: SITE.url, lastModified: latestPostDate, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE.url}/blog`, lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${SITE.url}/legal/privacy`, lastModified: LEGAL_UPDATED, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE.url}/legal/terms`, lastModified: LEGAL_UPDATED, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE.url}/legal/terms-south-africa`, lastModified: LEGAL_UPDATED, changeFrequency: "yearly", priority: 0.3 },
   ];
   for (const post of posts) {
     pages.push({

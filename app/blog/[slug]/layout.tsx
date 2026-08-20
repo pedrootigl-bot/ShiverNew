@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import { getPost, posts } from "@/lib/blog";
 import { hasPostBody } from "@/lib/blog-bodies";
-import { SEO } from "@/lib/seo";
+import { articleJsonLd, SEO } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -18,18 +19,30 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
+  const url = `/blog/${post.slug}`;
   return {
     title: post.title,
     description: post.description,
     keywords: ["Shiver", "Shiver Broker", ...post.keywords],
-    alternates: { canonical: `/blog/${post.slug}` },
+    authors: [{ name: "Shiver Broker", url: SITE.url }],
+    alternates: { canonical: url },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
-      url: `/blog/${post.slug}`,
+      locale: "pt_BR",
+      siteName: "Shiver Broker",
+      url,
       images: [SEO.ogImage],
       publishedTime: post.date,
+      modifiedTime: post.date,
+      authors: ["Shiver Broker"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [SEO.ogImage.url],
     },
   };
 }
@@ -44,37 +57,9 @@ export default async function PostLayout({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post || !hasPostBody(slug)) notFound();
-  const articleLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Article",
-        headline: post.title,
-        datePublished: post.date,
-        dateModified: post.date,
-        url: `${SITE.url}/blog/${post.slug}`,
-        mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
-        inLanguage: "pt-BR",
-        author: { "@id": `${SITE.url}/#organization` },
-        publisher: { "@id": `${SITE.url}/#organization` },
-        description: post.description,
-        image: `${SITE.url}/og.png`,
-        about: { "@type": "Thing", name: "Shiver Broker" },
-        keywords: ["Shiver", "Shiver Broker", ...post.keywords].join(", "),
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
-          { "@type": "ListItem", position: 3, name: post.title, item: `${SITE.url}/blog/${post.slug}` },
-        ],
-      },
-    ],
-  };
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+      <JsonLd data={articleJsonLd(post)} />
       {children}
     </>
   );

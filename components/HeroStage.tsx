@@ -7,11 +7,6 @@ import { SITE } from "@/lib/site";
 
 export function HeroStage() {
   const wrap = useRef<HTMLElement>(null);
-  const [showFin, setShowFin] = useState(false);
-
-  useEffect(() => {
-    if (!isSlowNetwork()) setShowFin(true);
-  }, []);
 
   useEffect(() => {
     const el = wrap.current;
@@ -67,19 +62,17 @@ export function HeroStage() {
       <div className="hero-stage">
         <HeroVideo />
         <div className="hero-vignette" />
-        {showFin ? (
-          <Image
-            className="float-layer fin"
-            src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
-            alt=""
-            width={1180}
-            height={700}
-            quality={70}
-            sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
-            style={{ height: "auto" }}
-            loading="lazy"
-          />
-        ) : null}
+        <Image
+          className="float-layer fin"
+          src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
+          alt=""
+          width={1180}
+          height={700}
+          quality={70}
+          sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
+          style={{ height: "auto" }}
+          priority
+        />
         <div className="hero-content">
           <div className="hero-left">
             <h1>Shiver Broker — o oceano está cheio. Os tubarões já escolheram o lado!</h1>

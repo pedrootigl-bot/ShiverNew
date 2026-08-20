@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12, rootMargin = "0px") {
+export function useInViewReplay<T extends HTMLElement>(
+  enterRatio = 0.12,
+  rootMargin = "0px",
+  replay = false,
+) {
   const ref = useRef<T>(null);
   const [on, setOn] = useState(false);
 
@@ -16,23 +20,73 @@ export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12, rootMa
     }
 
     const mobile = window.matchMedia("(max-width: 1100px)");
+    let visible = false;
+    let playFrame = 0;
+
+    const play = () => {
+      cancelAnimationFrame(playFrame);
+      setOn(false);
+      playFrame = requestAnimationFrame(() => {
+        void el.offsetWidth;
+        playFrame = requestAnimationFrame(() => setOn(true));
+      });
+    };
+
+    const stop = () => {
+      cancelAnimationFrame(playFrame);
+      setOn(false);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && (enterRatio <= 0 || entry.intersectionRatio >= enterRatio)) {
+        if (replay) {
+          if (entry.isIntersecting) {
+            if (!visible) {
+              visible = true;
+              play();
+            }
+            return;
+          }
+          if (visible) {
+            visible = false;
+            stop();
+          }
+          return;
+        }
+
+        const ratio = entry.intersectionRatio;
+        if (entry.isIntersecting && (enterRatio <= 0 || ratio >= enterRatio)) {
           setOn(true);
           return;
         }
         if (!entry.isIntersecting && !mobile.matches) setOn(false);
       },
       {
-        threshold: enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1],
-        rootMargin: mobile.matches ? "0px 0px -6% 0px" : rootMargin,
+        threshold: replay ? [0, 0.01, 1] : enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1],
+        rootMargin: replay
+          ? "-18% 0px -36% 0px"
+          : mobile.matches
+            ? "0px 0px -6% 0px"
+            : rootMargin,
       },
     );
 
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      visible = false;
+      stop();
+      io.unobserve(el);
+      io.observe(el);
+    };
+
     io.observe(el);
-    return () => io.disconnect();
-  }, [enterRatio, rootMargin]);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      cancelAnimationFrame(playFrame);
+      io.disconnect();
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, [enterRatio, rootMargin, replay]);
 
   return { ref, on };
 }

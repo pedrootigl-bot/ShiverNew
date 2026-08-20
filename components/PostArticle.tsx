@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
-import { getPost, morePosts, type PostSlug } from "@/lib/blog";
+import { adjacentPosts, getPost, morePosts, type PostSlug } from "@/lib/blog";
 import { hasPostBody, postBodies } from "@/lib/blog-bodies";
 import { canPrefetch } from "@/lib/network";
 import { SITE } from "@/lib/site";
@@ -16,10 +17,11 @@ export function PostArticle({ slug }: { slug: string }) {
   if (!post) return null;
   const html = postBodies[slug as PostSlug];
   const related = morePosts(slug);
+  const { prev, next } = adjacentPosts(slug);
 
   return (
     <RevealGroup>
-      <article className="blog-page wrap">
+      <article className="blog-page wrap post-page">
         <Reveal variant="left">
           <p className="blog-back">
             <Link
@@ -29,7 +31,7 @@ export function PostArticle({ slug }: { slug: string }) {
                 if (canPrefetch()) router.prefetch("/blog");
               }}
             >
-              ← Voltar ao blog
+              ← Voltar a todas as publicações
             </Link>
           </p>
         </Reveal>
@@ -41,9 +43,39 @@ export function PostArticle({ slug }: { slug: string }) {
         <Reveal variant="left" delay={80}>
           <h1>{post.title}</h1>
         </Reveal>
-        <Reveal variant="rise" delay={140}>
+        <Reveal variant="rise" delay={120}>
+          <div className="post-cover">
+            <Image
+              src={post.image}
+              alt={post.title}
+              fill
+              sizes="(max-width: 900px) 92vw, 820px"
+              quality={70}
+              priority
+            />
+          </div>
+        </Reveal>
+        <Reveal variant="rise" delay={160}>
           <div className="post-body" dangerouslySetInnerHTML={{ __html: html }} />
         </Reveal>
+        {(prev || next) ? (
+          <nav className="post-pager" aria-label="Outros artigos">
+            {prev ? (
+              <Link href={`/blog/${prev.slug}`} prefetch={false}>
+                <small>Anterior</small>
+                <strong>{prev.navTitle}</strong>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next ? (
+              <Link href={`/blog/${next.slug}`} prefetch={false} className="post-pager-next">
+                <small>Próximo</small>
+                <strong>{next.navTitle}</strong>
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
         <Reveal variant="scale" delay={220}>
           <div className="post-cta">
             <p>A conta demo já está pronta. $10.000 virtuais para sentir a plataforma — antes de o próximo movimento passar.</p>

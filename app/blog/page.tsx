@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/JsonLd";
 import { PostCard } from "@/components/PostCard";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
-import { postsByDate } from "@/lib/blog";
+import { posts } from "@/lib/blog";
+import { blogIndexJsonLd, SEO } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
 export const metadata: Metadata = {
-  title: "Blog Shiver Broker — Forex, Crypto, VIP e Como Investir",
+  title: { absolute: SEO.titleBlog },
   description:
     "Blog oficial da Shiver Broker: opções binárias, se a Shiver é confiável, programa VIP e o caminho da conta demo ao primeiro saque.",
   alternates: { canonical: "/blog" },
@@ -21,43 +23,45 @@ export const metadata: Metadata = {
     "corretora Shiver",
   ],
   openGraph: {
-    title: "Blog Shiver Broker",
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Shiver Broker",
+    title: SEO.titleBlog,
     description: "Artigos oficiais da corretora Shiver: plataforma, VIP, confiabilidade e investimentos.",
     url: "/blog",
-    type: "website",
+    images: [SEO.ogImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SEO.titleBlog,
+    description: "Artigos oficiais da corretora Shiver: plataforma, VIP, confiabilidade e investimentos.",
+    images: [SEO.ogImage.url],
   },
 };
 
 export default function BlogPage() {
-  const [featured, ...rest] = postsByDate();
-
   return (
-    <RevealGroup>
-      <div className="blog-page wrap">
-        <Reveal variant="blur">
-          <p className="meta">Blog</p>
-        </Reveal>
-        <Reveal variant="left">
-          <h1>Blog da Shiver Broker</h1>
-        </Reveal>
-        <Reveal variant="blur" delay={80}>
-          <p className="lead">
-            O que quem já opera na Shiver quer entender — e o que quem ainda está fora precisa ler antes de abrir a conta.
-          </p>
-        </Reveal>
-        <div className="post-grid">
-          {featured ? (
-            <Reveal variant="rise" delay={120} className="featured">
-              <PostCard post={featured} featured />
+    <>
+      <JsonLd data={blogIndexJsonLd()} />
+      <RevealGroup>
+        <div className="blog-page wrap">
+          <header className="blog-head">
+            <Reveal variant="blur">
+              <p className="blog-kicker">Postagens de blog</p>
             </Reveal>
-          ) : null}
-          {rest.map((post, index) => (
-            <Reveal key={post.slug} variant="rise" delay={200 + index * 110}>
-              <PostCard post={post} />
+            <Reveal variant="left">
+              <h1>Últimas Notícias e Análises</h1>
             </Reveal>
-          ))}
+          </header>
+          <div className="blog-feed">
+            {posts.map((post, index) => (
+              <Reveal key={post.slug} variant="rise" delay={120 + index * 90}>
+                <PostCard post={post} />
+              </Reveal>
+            ))}
+          </div>
         </div>
-      </div>
-    </RevealGroup>
+      </RevealGroup>
+    </>
   );
 }

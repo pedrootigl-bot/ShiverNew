@@ -14,7 +14,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link href="/" className="logo">
-              <img src="/media/R6Lgnh9bXoiPlyDe7JyGXOz604.png" alt="Shiver Broker" width={36} height={36} />
+              <img src="/media/R6Lgnh9bXoiPlyDe7JyGXOz604.png" alt="Shiver Broker" width={36} height={36} decoding="async" />
               <div>
                 <span>Shiver</span>
                 <small>BROKER</small>

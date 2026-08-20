@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { type ReactNode } from "react";
 import { useGroupReveal } from "@/components/RevealGroup";
 import { useInViewReplay } from "@/lib/useInViewReplay";
 
-export function LaptopStage() {
+export function LaptopStage({ children }: { children?: ReactNode }) {
   const grouped = useGroupReveal();
   const solo = useInViewReplay<HTMLDivElement>(0.28);
   const on = grouped !== null ? grouped : solo.on;
@@ -28,6 +29,7 @@ export function LaptopStage() {
           </div>
           <div className="laptop-base" />
         </div>
+        {children}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { postsByDate } from "@/lib/blog";
+import { posts } from "@/lib/blog";
 import { canPrefetch } from "@/lib/network";
 import { NAV, SITE } from "@/lib/site";
 
@@ -14,7 +14,7 @@ export function Header() {
   const router = useRouter();
   const blogRef = useRef<HTMLDivElement>(null);
   const hoverTimer = useRef(0);
-  const articles = postsByDate();
+  const articles = posts;
   const compactNav = "(max-width: 1100px)";
 
   function prefetchBlog() {
@@ -116,7 +116,7 @@ export function Header() {
       ) : null}
       <div className="header-pill">
         <Link href="/#inicio" className="logo" aria-label="Shiver Broker" onClick={(event) => onHashClick(event, "/#inicio")}>
-          <img src="/media/R6Lgnh9bXoiPlyDe7JyGXOz604.png" alt="Shiver Broker" width={34} height={34} />
+          <img src="/media/R6Lgnh9bXoiPlyDe7JyGXOz604.png" alt="Shiver Broker" width={34} height={34} decoding="async" />
           <div>
             <span>Shiver</span>
             <small>BROKER</small>

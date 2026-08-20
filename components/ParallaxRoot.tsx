@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { isSlowNetwork } from "@/lib/network";
 
-export function ParallaxRoot({ children }: { children: React.ReactNode }) {
+export function ParallaxRoot() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (isSlowNetwork()) return;
@@ -32,5 +32,5 @@ export function ParallaxRoot({ children }: { children: React.ReactNode }) {
       window.removeEventListener("resize", onScroll);
     };
   }, []);
-  return <>{children}</>;
+  return null;
 }

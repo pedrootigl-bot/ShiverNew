@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, type ReactNode } from "react";
-import { PostPage } from "@/components/PostPage";
+import { useEffect, useRef } from "react";
 import { canPrefetch } from "@/lib/network";
 
 function sameOriginUrl(href: string) {
@@ -17,21 +16,20 @@ function jumpTo(top: number) {
   window.scrollTo({ top, left: 0, behavior: "auto" });
 }
 
-export function PageFade({ children }: { children: ReactNode }) {
+export function PageFade() {
   const pathname = usePathname();
   const router = useRouter();
-  const ref = useRef<HTMLDivElement>(null);
   const firstLoad = useRef(true);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = document.getElementById("page-fade");
     if (!el) return;
     el.classList.remove("page-leave");
-    if (!firstLoad.current) jumpTo(0);
     if (firstLoad.current) {
       firstLoad.current = false;
       return;
     }
+    jumpTo(0);
     el.classList.add("page-enter");
     if (pathname.startsWith("/blog")) el.classList.add("blog-enter");
     const id = window.setTimeout(() => {
@@ -41,8 +39,8 @@ export function PageFade({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
-    void PostPage;
     if (!canPrefetch()) return;
+    if (pathname !== "/") return;
     const prefetch = () => {
       router.prefetch("/blog");
     };
@@ -53,7 +51,7 @@ export function PageFade({ children }: { children: ReactNode }) {
     }
     const id = window.setTimeout(prefetch, 1200);
     return () => window.clearTimeout(id);
-  }, [router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -85,9 +83,5 @@ export function PageFade({ children }: { children: ReactNode }) {
     return () => document.removeEventListener("click", onClick);
   }, []);
 
-  return (
-    <div ref={ref} className="page-fade">
-      {children}
-    </div>
-  );
+  return null;
 }
