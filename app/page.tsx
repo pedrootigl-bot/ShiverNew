@@ -137,14 +137,14 @@ export default function HomePage() {
           <RevealGroup className="payout-grid">
             <Reveal variant="up" className="payout-shot-cell">
               <div className="payout-shot">
-                <Image
+                <img
+                  className="payout-shot__media"
                   src="/media/payout-trader.webp"
                   alt="Visão do mercado de ativos na Shiver Broker"
-                  width={1080}
-                  height={1440}
-                  quality={75}
-                  sizes="(max-width: 1100px) min(380px, 100vw), 380px"
+                  width={720}
+                  height={960}
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
             </Reveal>
