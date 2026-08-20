@@ -15,15 +15,19 @@ export function useInViewReplay<T extends HTMLElement>(enterRatio = 0.12, rootMa
       return;
     }
 
+    const mobile = window.matchMedia("(max-width: 1100px)");
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && (enterRatio <= 0 || entry.intersectionRatio >= enterRatio)) {
           setOn(true);
           return;
         }
-        if (!entry.isIntersecting) setOn(false);
+        if (!entry.isIntersecting && !mobile.matches) setOn(false);
       },
-      { threshold: enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1], rootMargin },
+      {
+        threshold: enterRatio <= 0 ? [0, 1] : [0, enterRatio, 1],
+        rootMargin: mobile.matches ? "0px 0px -6% 0px" : rootMargin,
+      },
     );
 
     io.observe(el);
