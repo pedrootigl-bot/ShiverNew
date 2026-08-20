@@ -11,8 +11,8 @@ export function LaptopStage() {
 
   return (
     <div className={`laptop-stage${on ? " open" : ""}`} ref={grouped !== null ? undefined : solo.ref} data-parallax="0.05">
-      <Image className="crystal c1" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={230} height={230} quality={65} sizes="230px" loading="lazy" />
-      <Image className="crystal c2" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={210} height={210} quality={65} sizes="210px" loading="lazy" />
+      <Image className="crystal c1" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={230} height={230} quality={65} sizes="230px" style={{ height: "auto" }} loading="lazy" />
+      <Image className="crystal c2" src="/media/WhVLaH5mcozGLDROwsWbfwSHPik.webp" alt="" width={210} height={210} quality={65} sizes="210px" style={{ height: "auto" }} loading="lazy" />
       <div className="laptop-scene">
         <div className="laptop">
           <div className="laptop-lid">

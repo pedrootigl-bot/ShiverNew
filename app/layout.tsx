@@ -24,7 +24,7 @@ const jsonLd = siteJsonLd();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
+    <html lang="pt-BR" className={inter.variable} data-scroll-behavior="smooth">
       <head>
         <link rel="icon" href="/icon.png" />
         <meta name="theme-color" content="#05070a" />

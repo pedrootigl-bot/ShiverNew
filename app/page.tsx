@@ -75,7 +75,7 @@ function Review({
       <Stars value={t.stars} uid={uid} />
       <p>“{t.quote}”</p>
       <footer>
-        <Image src={t.photo} alt="" width={48} height={48} loading="lazy" />
+        <Image src={t.photo} alt="" width={48} height={48} quality={75} sizes="48px" loading="lazy" unoptimized />
         <div>
           <strong>{t.name}</strong>
           <small>{t.date}</small>
@@ -234,8 +234,8 @@ export default function HomePage() {
                   <article className="vip-box">Premiações presenciais para quem já saiu da média</article>
                 </div>
                 <div className="vip-core">
-                  <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={420} height={420} quality={65} sizes="(max-width: 900px) 70vw, 280px" loading="lazy" />
-                  <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={280} height={280} quality={65} sizes="(max-width: 900px) 50vw, 180px" loading="lazy" />
+                  <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={420} height={420} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" />
+                  <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={280} height={280} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" />
                 </div>
                 <div className="vip-col vip-col-right">
                   <article className="vip-box">Ativos e modalidades liberados para quem performa mais</article>
@@ -469,6 +469,7 @@ export default function HomePage() {
               height={780}
               quality={70}
               sizes="(max-width: 900px) 70vw, 300px"
+              style={{ height: "auto" }}
               loading="lazy"
             />
             <article className="glass-card gc-tr hover-lift">

@@ -76,6 +76,7 @@ export function HeroStage() {
             height={700}
             quality={70}
             sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
+            style={{ height: "auto" }}
             loading="lazy"
           />
         ) : null}

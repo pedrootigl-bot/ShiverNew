@@ -16,9 +16,14 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 365,
-    deviceSizes: [640, 750, 828, 1080, 1280, 1920],
-    imageSizes: [32, 48, 64, 96, 128, 256, 384],
-    qualities: [45, 50, 60, 65, 70, 75, 80],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1280, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    qualities: [50, 60, 65, 70, 75, 80],
+    localPatterns: [
+      { pathname: "/media/**" },
+      { pathname: "/icon.png" },
+      { pathname: "/og.png" },
+    ],
   },
   async headers() {
     return [

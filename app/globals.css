@@ -460,6 +460,7 @@ h2 + .lead,
 }
 .fin {
   width: min(1180px, 100%);
+  height: auto;
   bottom: -6%;
   left: 50%;
   transform-origin: 50% 88%;
@@ -470,6 +471,7 @@ h2 + .lead,
 }
 .crystal-l {
   width: 280px;
+  height: auto;
   left: -40px;
   top: 22%;
   opacity: 0.85;
@@ -478,6 +480,7 @@ h2 + .lead,
 }
 .crystal-r {
   width: 300px;
+  height: auto;
   right: -50px;
   bottom: 16%;
   opacity: 0.8;
@@ -721,6 +724,7 @@ h1, h2, h3, .lead, p {
   position: absolute;
   pointer-events: none;
   z-index: 1;
+  height: auto;
   opacity: 0;
   filter: drop-shadow(0 18px 40px rgba(70, 193, 238, 0.45));
   transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
@@ -1077,12 +1081,14 @@ h1, h2, h3, .lead, p {
 }
 .vip-core .hex-a {
   width: 78%;
+  height: auto;
   left: -4%;
   top: 8%;
   animation: float 7s ease-in-out infinite;
 }
 .vip-core .hex-b {
   width: 62%;
+  height: auto;
   right: -8%;
   bottom: 0;
   animation: float-rot 8s ease-in-out infinite;
@@ -1182,6 +1188,7 @@ h1, h2, h3, .lead, p {
 }
 .pay-method img {
   width: 100%;
+  height: auto;
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center;
@@ -1568,7 +1575,7 @@ h1, h2, h3, .lead, p {
   font-size: 12px;
 }
 .market-foot b { color: var(--cyan); }
-.crystal-hero { width: min(460px, 100%); margin: 0 auto; filter: drop-shadow(0 30px 50px rgba(70,193,238,0.28)); }
+.crystal-hero { width: min(460px, 100%); height: auto; margin: 0 auto; filter: drop-shadow(0 30px 50px rgba(70,193,238,0.28)); }
 .assets-globe {
   width: 100%;
   isolation: isolate;
@@ -1701,6 +1708,7 @@ h1, h2, h3, .lead, p {
   position: relative;
   z-index: 3;
   width: min(300px, 58vw);
+  height: auto;
   margin: 20px auto;
   display: block;
   filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.65));
@@ -2461,6 +2469,7 @@ h1, h2, h3, .lead, p {
   .fin {
     opacity: 0.85;
     width: min(720px, 128%);
+    height: auto;
     max-width: none;
     left: 50%;
     right: auto;
@@ -2559,6 +2568,7 @@ h1, h2, h3, .lead, p {
   .hero-content { gap: 16px; }
   .fin {
     width: min(560px, 148%);
+    height: auto;
     bottom: -8%;
   }
   .grid-4, .features, .footer-grid, .pay-methods, .post-grid {
