@@ -8,7 +8,8 @@ import { RevealGroup } from "@/components/RevealGroup";
 import { adjacentPosts, getPost, morePosts, type PostSlug } from "@/lib/blog";
 import { hasPostBody, postBodies } from "@/lib/blog-bodies";
 import { canPrefetch } from "@/lib/network";
-import { SITE } from "@/lib/site";
+import { BLOG_AUTHOR, SITE } from "@/lib/site";
+import { CtaButton } from "@/components/CtaButton";
 
 export function PostArticle({ slug }: { slug: string }) {
   const router = useRouter();
@@ -31,18 +32,27 @@ export function PostArticle({ slug }: { slug: string }) {
                 if (canPrefetch()) router.prefetch("/blog");
               }}
             >
-              ← Voltar a todas as publicações
+              ← Voltar ao blog
             </Link>
           </p>
         </Reveal>
-        <Reveal variant="blur" delay={40}>
-          <p className="meta">
-            {post.displayDate} · {post.category}
+        <header className="post-head">
+          <Reveal variant="blur" delay={40}>
+            <p className="post-head-meta">
+              <span className="blog-card-cat">{post.category}</span>
+              <small>{post.displayDate}</small>
+            </p>
+          </Reveal>
+          <Reveal variant="left" delay={80}>
+            <h1>{post.title}</h1>
+          </Reveal>
+          <p className="post-byline">
+            Por <Link href="/sobre">{BLOG_AUTHOR.name}</Link>
+            <span className="post-byline-role">{BLOG_AUTHOR.role}</span>
+            <span aria-hidden> · </span>
+            Publicado em {post.displayDate}
           </p>
-        </Reveal>
-        <Reveal variant="left" delay={80}>
-          <h1>{post.title}</h1>
-        </Reveal>
+        </header>
         <Reveal variant="rise" delay={120}>
           <div className="post-cover">
             <Image
@@ -79,9 +89,9 @@ export function PostArticle({ slug }: { slug: string }) {
         <Reveal variant="scale" delay={220}>
           <div className="post-cta">
             <p>A conta demo já está pronta. $10.000 virtuais para sentir a plataforma — antes de o próximo movimento passar.</p>
-            <a className="btn btn-cta" href={SITE.trade.trial}>
+            <CtaButton href={SITE.trade.trial}>
               Entrar na plataforma <span aria-hidden>→</span>
-            </a>
+            </CtaButton>
           </div>
         </Reveal>
         {related.length > 0 ? (
@@ -102,6 +112,15 @@ export function PostArticle({ slug }: { slug: string }) {
                         if (canPrefetch()) router.prefetch(href);
                       }}
                     >
+                      <span className="post-card-media">
+                        <Image
+                          src={item.image}
+                          alt={item.navTitle}
+                          fill
+                          sizes="(max-width: 720px) 92vw, 260px"
+                          quality={60}
+                        />
+                      </span>
                       <p className="meta">
                         {item.category} · {item.displayDate}
                       </p>

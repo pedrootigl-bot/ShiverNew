@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
 import { getPost, posts } from "@/lib/blog";
 import { hasPostBody } from "@/lib/blog-bodies";
-import { articleJsonLd, SEO } from "@/lib/seo";
-import { SITE } from "@/lib/site";
+import { articleJsonLd } from "@/lib/seo";
+import { BLOG_AUTHOR } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: post.title,
     description: post.description,
-    keywords: ["Shiver", "Shiver Broker", ...post.keywords],
-    authors: [{ name: "Shiver Broker", url: SITE.url }],
+    keywords: [...post.keywords],
+    authors: [{ name: BLOG_AUTHOR.name, url: "/sobre" }],
     alternates: { canonical: url },
     openGraph: {
       title: post.title,
@@ -33,16 +33,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       locale: "pt_BR",
       siteName: "Shiver Broker",
       url,
-      images: [SEO.ogImage],
+      images: [{ url: post.image, alt: post.title }],
       publishedTime: post.date,
-      modifiedTime: post.date,
-      authors: ["Shiver Broker"],
+      modifiedTime: post.updated,
+      authors: [BLOG_AUTHOR.name],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [SEO.ogImage.url],
+      images: [post.image],
     },
   };
 }

@@ -2,7 +2,11 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { BlogLoadOverlay } from "@/components/BlogLoadOverlay";
+import { onIdle } from "@/lib/idle";
 import { canPrefetch } from "@/lib/network";
+import { scrollToId, scrollToTop } from "@/lib/scroll";
+import { resizeLenis, startLenis } from "@/lib/start-lenis";
 
 function sameOriginUrl(href: string) {
   try {
@@ -12,14 +16,29 @@ function sameOriginUrl(href: string) {
   }
 }
 
-function jumpTo(top: number) {
-  window.scrollTo({ top, left: 0, behavior: "auto" });
-}
-
 export function PageFade() {
   const pathname = usePathname();
   const router = useRouter();
   const firstLoad = useRef(true);
+
+  useEffect(() => {
+    let stop: (() => void) | undefined;
+    let cancelled = false;
+    const begin = () => {
+      if (cancelled) return;
+      stop = startLenis();
+    };
+    const cancelIdle = onIdle(begin, 900);
+    return () => {
+      cancelled = true;
+      cancelIdle();
+      stop?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    resizeLenis();
+  }, [pathname]);
 
   useEffect(() => {
     const el = document.getElementById("page-fade");
@@ -29,7 +48,7 @@ export function PageFade() {
       firstLoad.current = false;
       return;
     }
-    jumpTo(0);
+    scrollToTop({ immediate: true });
     el.classList.add("page-enter");
     if (pathname.startsWith("/blog")) el.classList.add("blog-enter");
     const id = window.setTimeout(() => {
@@ -73,9 +92,7 @@ export function PageFade() {
       if (nextPath !== here || !url.hash) return;
 
       event.preventDefault();
-      const id = decodeURIComponent(url.hash.slice(1));
-      if (id === "inicio") jumpTo(0);
-      else document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" });
+      scrollToId(decodeURIComponent(url.hash.slice(1)));
       window.history.pushState(null, "", `${nextPath}${url.hash}`);
     };
 
@@ -83,5 +100,5 @@ export function PageFade() {
     return () => document.removeEventListener("click", onClick);
   }, []);
 
-  return null;
+  return <BlogLoadOverlay />;
 }

@@ -308,3 +308,5 @@ export function AssetsGlobe() {
     </div>
   );
 }
+
+export default AssetsGlobe;

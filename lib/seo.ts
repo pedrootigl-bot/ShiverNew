@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { posts, type Post } from "@/lib/blog";
-import { SITE } from "@/lib/site";
+import { BLOG_AUTHOR, SITE } from "@/lib/site";
 
 export const SEO = {
   title: "Shiver Broker | Corretora Forex, Crypto e Opções",
@@ -8,24 +8,12 @@ export const SEO = {
   titleBlog: "Blog Shiver Broker | Forex, Crypto, VIP e Como Investir",
   description: SITE.description,
   keywords: [
-    "Shiver",
     "Shiver Broker",
-    "ShiverBroker",
-    "shiverbroker",
     "corretora Shiver",
-    "Shiver corretora",
-    "Shiver investir",
-    "Shiver investimento",
-    "Shiver login",
-    "Shiver Broker login",
+    "forex",
+    "crypto",
+    "opções binárias",
     "conta demo Shiver",
-    "plataforma Shiver",
-    "forex Shiver",
-    "crypto Shiver",
-    "opções binárias Shiver",
-    "corretora forex",
-    "corretora crypto",
-    "payout 97%",
   ],
   ogImage: {
     url: "/og.png",
@@ -69,7 +57,7 @@ function organizationNode() {
       addressRegion: "Nevis",
       addressCountry: "KN",
     },
-    sameAs: ["https://trade.shiverbroker.com", SITE.url],
+    sameAs: ["https://trade.shiverbroker.com"],
     contactPoint: {
       "@type": "ContactPoint",
       email: SITE.email,
@@ -212,16 +200,23 @@ export function articleJsonLd(post: Post) {
         "@type": "Article",
         headline: post.title,
         datePublished: post.date,
-        dateModified: post.date,
+        dateModified: post.updated,
         url,
         mainEntityOfPage: url,
         inLanguage: "pt-BR",
         articleSection: post.category,
-        author: { "@id": orgId },
+        author: {
+          "@type": "Person",
+          name: BLOG_AUTHOR.name,
+          jobTitle: BLOG_AUTHOR.role,
+          url: `${SITE.url}/sobre`,
+          worksFor: { "@id": orgId },
+        },
         publisher: {
           "@type": "Organization",
           "@id": orgId,
           name: "Shiver Broker",
+          url: SITE.url,
           logo: {
             "@type": "ImageObject",
             url: logoUrl,
@@ -230,9 +225,9 @@ export function articleJsonLd(post: Post) {
           },
         },
         description: post.description,
-        image: ogUrl,
+        image: `${SITE.url}${post.image}`,
         about: { "@type": "Thing", name: "Shiver Broker" },
-        keywords: ["Shiver", "Shiver Broker", ...post.keywords].join(", "),
+        keywords: post.keywords.join(", "),
       },
       {
         "@type": "BreadcrumbList",
@@ -240,6 +235,33 @@ export function articleJsonLd(post: Post) {
           { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
           { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
           { "@type": "ListItem", position: 3, name: post.title, item: url },
+        ],
+      },
+    ],
+  };
+}
+
+export function aboutJsonLd() {
+  const url = `${SITE.url}/sobre`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: "Sobre a Shiver Broker",
+        description:
+          "Quem opera a Shiver Broker: Sun Wave LLC, pagamentos em Chipre, documentos públicos e o que a CVM não autoriza.",
+        inLanguage: "pt-BR",
+        isPartOf: { "@id": siteId },
+        about: { "@id": orgId },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
+          { "@type": "ListItem", position: 2, name: "Sobre", item: url },
         ],
       },
     ],
@@ -284,7 +306,7 @@ export const defaultMetadata: Metadata = {
   referrer: "origin-when-cross-origin",
   category: "finance",
   keywords: [...SEO.keywords],
-  authors: [{ name: "Shiver Broker", url: SITE.url }],
+  authors: [{ name: "Equipe Shiver Broker", url: `${SITE.url}/sobre` }],
   creator: "Shiver Broker",
   publisher: "Sun Wave LLC",
   formatDetection: { telephone: false, email: false, address: false },

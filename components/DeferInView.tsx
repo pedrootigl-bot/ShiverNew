@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 export function DeferInView({
   children,
   placeholder,
-  rootMargin = "420px",
+  rootMargin = "180px",
 }: {
   children: ReactNode;
   placeholder: ReactNode;

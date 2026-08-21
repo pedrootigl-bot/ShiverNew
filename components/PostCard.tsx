@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/lib/blog";
 import { canPrefetch } from "@/lib/network";
+import { BLOG_AUTHOR } from "@/lib/site";
 
 export function PostCard({ post }: { post: Post }) {
   const router = useRouter();
@@ -19,17 +20,6 @@ export function PostCard({ post }: { post: Post }) {
         if (canPrefetch()) router.prefetch(href);
       }}
     >
-      <div className="blog-card-row">
-        <div className="blog-card-copy">
-          <h2>{post.title}</h2>
-          <p>{post.excerpt}</p>
-          <strong className="blog-card-more">Read more &gt;</strong>
-        </div>
-        <div className="blog-card-meta">
-          <span className="blog-card-cat">{post.category}</span>
-          <small>{post.displayDate}</small>
-        </div>
-      </div>
       <span className="blog-card-media">
         <Image
           src={post.image}
@@ -39,6 +29,20 @@ export function PostCard({ post }: { post: Post }) {
           quality={70}
         />
       </span>
+      <div className="blog-card-body">
+        <div className="blog-card-meta">
+          <span className="blog-card-cat">{post.category}</span>
+          <small>{post.displayDate}</small>
+        </div>
+        <h2>{post.title}</h2>
+        <p className="blog-card-author">
+          {BLOG_AUTHOR.name}
+          <span aria-hidden> · </span>
+          {BLOG_AUTHOR.role}
+        </p>
+        <p className="blog-card-excerpt">{post.excerpt}</p>
+        <strong className="blog-card-more">Ler artigo →</strong>
+      </div>
     </Link>
   );
 }

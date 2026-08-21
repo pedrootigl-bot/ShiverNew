@@ -13,15 +13,9 @@ export const posts = [
       "Entenda o que são opções binárias, CALL, PUT, payout e expiração. Como investir em forex, crypto e commodities na Shiver Broker.",
     category: "Artigos",
     date: "2026-04-18",
+    updated: "2026-08-21",
     displayDate: "18 de abr. de 2026",
-    keywords: [
-      "opções binárias",
-      "Shiver",
-      "Shiver Broker",
-      "investir Shiver",
-      "forex",
-      "blitz",
-    ],
+    keywords: ["opções binárias", "CALL", "PUT", "payout", "forex"],
   },
   {
     slug: "confiavel",
@@ -35,13 +29,9 @@ export const posts = [
       "A Shiver Broker é confiável? Veja regulamentação, Sun Wave LLC, saques, suporte 24/7 e documentos legais da corretora Shiver Broker.",
     category: "Notícias",
     date: "2026-04-22",
+    updated: "2026-08-21",
     displayDate: "22 de abr. de 2026",
-    keywords: [
-      "shiver broker",
-      "corretora shiver broker",
-      "shiverbroker",
-      "shiver investimento",
-    ],
+    keywords: ["Shiver Broker", "Sun Wave LLC", "regulamentação", "CVM"],
   },
   {
     slug: "shiver-vip",
@@ -55,8 +45,9 @@ export const posts = [
       "Programa VIP da Shiver Broker: A.I Financial™, saques prioritários, cupons e premiações para grandes tubarões do mercado financeiro.",
     category: "Recursos",
     date: "2026-04-15",
+    updated: "2026-08-21",
     displayDate: "15 de abr. de 2026",
-    keywords: ["grandes tubarões", "shiver broker vip", "mercado financeiro"],
+    keywords: ["VIP", "A.I Financial", "saque prioritário"],
   },
   {
     slug: "jornada",
@@ -70,8 +61,9 @@ export const posts = [
       "Guia para investir na Shiver Broker: conta demo de $10.000, depósito, KYC e primeiro saque na corretora Shiver.",
     category: "Artigos",
     date: "2026-04-20",
+    updated: "2026-08-21",
     displayDate: "20 de abr. de 2026",
-    keywords: ["shiver investimento", "shiver investir", "conta demo"],
+    keywords: ["conta demo", "KYC", "saque", "depósito"],
   },
 ] as const;
 
@@ -90,7 +82,7 @@ export function getPost(slug: string) {
   return posts.find((post) => post.slug === slug);
 }
 
-export function morePosts(slug: string, limit = 2) {
+export function morePosts(slug: string, limit = 3) {
   const current = getPost(slug);
   const rest = posts.filter((post) => post.slug !== slug);
   const same = rest.filter((post) => post.category === current?.category);

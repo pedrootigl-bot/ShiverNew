@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { isSlowNetwork } from "@/lib/network";
+import { isSoftwareGpu } from "@/lib/gpu";
+import { heroMotionDelayMs, skipHeroMotion } from "@/lib/network";
 import { SITE } from "@/lib/site";
+import { scheduleHomeWarmup } from "@/lib/warmup-home";
+import { CtaButton } from "@/components/CtaButton";
+import { MoltenMetal } from "@/components/MoltenMetal";
 
-export function HeroStage() {
+export function HeroStage({ overlayDriven = false }: { overlayDriven?: boolean }) {
   const wrap = useRef<HTMLElement>(null);
+
+  useEffect(() => scheduleHomeWarmup(), []);
 
   useEffect(() => {
     const el = wrap.current;
@@ -18,13 +24,14 @@ export function HeroStage() {
       el.style.setProperty("--mx", x.toFixed(3));
       el.style.setProperty("--my", y.toFixed(3));
     };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+    el.addEventListener("pointermove", onMove, { passive: true });
+    return () => el.removeEventListener("pointermove", onMove);
   }, []);
 
   useEffect(() => {
     const el = wrap.current;
-    if (!el) return;
+    if (!el || overlayDriven) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.style.setProperty("--hero-p", "1");
@@ -55,23 +62,22 @@ export function HeroStage() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [overlayDriven]);
 
   return (
     <section className="hero" id="inicio" ref={wrap} aria-label="Introdução Shiver Broker">
       <div className="hero-stage">
-        <HeroVideo />
+        <HeroMetal />
         <div className="hero-vignette" />
         <Image
           className="float-layer fin"
           src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
           alt=""
           width={1180}
-          height={700}
+          height={611}
           quality={70}
           sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
           style={{ height: "auto" }}
-          priority
         />
         <div className="hero-content">
           <div className="hero-left">
@@ -84,9 +90,9 @@ export function HeroStage() {
               <strong>97%, a execução não espera e o acesso não é para todo mundo.</strong> Abra a Shiver e veja o que
               está do outro lado.
             </p>
-            <a className="btn btn-cta btn-lg" href={SITE.trade.trial}>
+            <CtaButton href={SITE.trade.trial} size="lg">
               Testar com $10.000 <span aria-hidden>→</span>
-            </a>
+            </CtaButton>
           </div>
         </div>
       </div>
@@ -94,48 +100,86 @@ export function HeroStage() {
   );
 }
 
-function HeroVideo() {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [playVideo, setPlayVideo] = useState(false);
+function HeroMetal() {
+  const wrap = useRef<HTMLDivElement>(null);
+  const [loadFx, setLoadFx] = useState(false);
+  const [fxReady, setFxReady] = useState(false);
 
   useEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (isSlowNetwork()) return;
-    setPlayVideo(true);
+    if (skipHeroMotion()) return;
+    if (isSoftwareGpu()) return;
+
+    const delay = heroMotionDelayMs();
+    let timeout = 0;
+    let pageLoaded = document.readyState === "complete";
+    let visible = false;
+
+    const clearArm = () => {
+      if (timeout) {
+        window.clearTimeout(timeout);
+        timeout = 0;
+      }
+    };
+
+    const arm = () => {
+      clearArm();
+      if (!pageLoaded || !visible) return;
+      timeout = window.setTimeout(() => setLoadFx(true), delay);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting && entry.intersectionRatio > 0.08;
+        if (visible) arm();
+        else clearArm();
+      },
+      { threshold: [0, 0.08, 0.2] },
+    );
+    io.observe(el);
+
+    const onLoad = () => {
+      pageLoaded = true;
+      arm();
+    };
+
+    if (pageLoaded) arm();
+    else window.addEventListener("load", onLoad, { once: true });
+
+    return () => {
+      clearArm();
+      io.disconnect();
+      window.removeEventListener("load", onLoad);
+    };
   }, []);
 
-  useEffect(() => {
-    const video = ref.current;
-    if (!video || !playVideo) return;
-
-    const play = () => {
-      video.play().catch(() => undefined);
-    };
-
-    play();
-    const onVis = () => {
-      if (document.visibilityState === "visible") play();
-      else video.pause();
-    };
-    document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
-  }, [playVideo]);
-
   return (
-    <div className="hero-video">
-      <Image
-        className="hero-poster"
-        src="/media/hero-bg.jpg"
-        alt=""
-        fill
-        priority
-        quality={60}
-        sizes="100vw"
-      />
-      {playVideo ? (
-        <video ref={ref} autoPlay muted loop playsInline preload="metadata" poster="/media/hero-bg.jpg">
-          <source src="/media/hero-bg.mp4" type="video/mp4" />
-        </video>
+    <div className={`hero-video${fxReady ? " is-ready" : ""}`} ref={wrap}>
+      <div className={`hero-poster${fxReady ? " is-hidden" : ""}`} aria-hidden="true" />
+      {loadFx ? (
+        <MoltenMetal
+          color1="#062038"
+          color2="#2f7bff"
+          color3="#7ae2ff"
+          speed={0.35}
+          scale={4}
+          detail={3}
+          glow={1.6}
+          coreSize={0.1}
+          swirl={1}
+          fold={-0.2}
+          blackPoint={0.05}
+          brightness={1.3}
+          colorMode="molten"
+          grain={false}
+          grainIntensity={0}
+          mouseInteraction
+          mouseStrength={0.3}
+          opacity={1}
+          onReady={() => setFxReady(true)}
+        />
       ) : null}
     </div>
   );

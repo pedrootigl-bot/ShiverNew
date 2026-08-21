@@ -1,49 +1,44 @@
 # SEO — Shiver Broker
 
-Atualizado em 20 de agosto de 2026.
+Atualizado em 21 de agosto de 2026.
 
 ## O que o site envia ao Google
 
-- Título e descrição com **Shiver**, **Shiver Broker**, forex, crypto e opções.
-- Canonical por página (home, blog, artigos e legal), sem título duplicado no template.
-- Open Graph e Twitter (`summary_large_image`) em home, blog e artigos.
-- Nomes alternativos no schema.org: Shiver, ShiverBroker, Corretora Shiver.
-- `Organization`, `Brand`, `WebSite` e `FinancialService` no layout (válido em todas as URLs).
-- `WebPage` da home **somente na home** — não vaza para `/blog` nem legal.
-- Blog: `CollectionPage` + `ItemList` dos artigos.
-- Artigos: `Article` (com `publisher.logo`) + breadcrumbs.
+- Título e descrição com **Shiver Broker**, forex, crypto e opções. Meta `keywords` curto (não lista de variações).
+- Canonical por página (home, blog, artigos, `/sobre` e legal).
+- Open Graph e Twitter em home, blog e artigos. Artigos usam a imagem do post, não só o `og.png`.
+- `Organization`, `Brand`, `WebSite` e `FinancialService` no layout.
+- `WebPage` da home **somente na home**.
+- Blog: `CollectionPage` + `ItemList`.
+- Artigos: `Article` com autor Pessoa (Helena Prado, Analista de Conteúdo, `/sobre`), `dateModified`, imagem do post e breadcrumbs.
+- `/sobre`: `AboutPage` + breadcrumbs.
 - Legal: `WebPage` + breadcrumbs.
-- Sitemap em `https://www.shiverbroker.com/sitemap.xml` com `lastModified` real dos posts (não a data do deploy).
+- Sitemap com `/sobre` e `lastModified` dos posts (`updated`).
 - Robots permitindo indexação.
-- H1 da home: “Shiver Broker — o oceano está cheio…”
-- Alt text nos depoimentos, métodos de depósito e imagens de produto.
 
 ## O que ranking **não** é automático
 
-O Google não garante a 1ª posição para a palavra “Shiver” (há outros produtos com o mesmo nome). O que este trabalho faz é deixar claro que **este domínio é a Shiver Broker**, para buscas de marca e relacionadas.
+O Google não garante a 1ª posição para “Shiver”. O nicho é YMYL (dinheiro). Beleza, schema e CSS não substituem licença, autor humano e conteúdo útil contínuo.
 
-## Obrigatório depois do deploy
+Não inventar `AggregateRating` nem FAQ schema sem o texto visível na página.
 
-1. Abrir [Google Search Console](https://search.google.com/search-console).
-2. Adicionar a propriedade `https://www.shiverbroker.com`.
-3. Verificar o domínio (DNS ou arquivo HTML).
-4. Enviar o sitemap: `https://www.shiverbroker.com/sitemap.xml`.
-5. Pedir indexação da home, `/blog` e artigos principais.
+## Feito no código (21/08)
 
-## Consultas que o site reforça
+- Página `/sobre` com empresa, CVM e PDFs. FAQ retirada a pedido.
+- Byline nos artigos: Helena Prado, Analista de Conteúdo, apontando para `/sobre`.
+- Dois depoimentos de Camila Rocha são clientes distintas (foto e data diferentes).
+- Keywords e JSON-LD menos repetitivos.
 
-- Shiver
-- Shiver Broker
-- ShiverBroker
-- corretora Shiver
-- Shiver login
-- Shiver investir
-- conta demo Shiver
-- Shiver Broker é confiável
+## Obrigatório fora do código
+
+1. Google Search Console: propriedade `https://www.shiverbroker.com`, verificar, enviar `sitemap.xml`, pedir indexação de `/`, `/sobre`, `/blog`.
+2. Autores reais (nome, cargo, bio) quando houver responsável editorial.
+3. Perfis oficiais no `sameAs` (LinkedIn, YouTube, etc.) — só URLs verdadeiras.
+4. Publicar artigos úteis com data de atualização verdadeira, não só peças de conversão.
+5. Medir Core Web Vitals no Search Console (produção, não `next dev`).
 
 ## Manutenção
 
 - Manter “Shiver Broker” no título da home e nos H1 das páginas-chave.
-- Publicar artigos no blog com a marca no título quando fizer sentido.
-- Não inventar `AggregateRating` nem FAQ schema sem o conteúdo visível na página.
-- Qualquer página nova precisa de canonical, OG e JSON-LD próprio — não reutilizar o `WebPage` da home.
+- Qualquer página nova: canonical, OG e JSON-LD próprio.
+- Depoimentos: nomes únicos; não fabricar nota agregada.

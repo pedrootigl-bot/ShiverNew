@@ -5,7 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { posts } from "@/lib/blog";
 import { canPrefetch } from "@/lib/network";
+import { scrollToId } from "@/lib/scroll";
 import { NAV, SITE } from "@/lib/site";
+import { CtaButton } from "@/components/CtaButton";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -29,10 +31,12 @@ export function Header() {
 
   function scrollToHash(hash: string) {
     const id = hash.replace(/^#/, "");
-    const target = document.getElementById(id);
-    if (!target) return false;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    if (id === "inicio") {
+      scrollToId("inicio");
+      return true;
+    }
+    if (!document.getElementById(id)) return false;
+    scrollToId(id);
     return true;
   }
 
@@ -99,12 +103,8 @@ export function Header() {
     if (pathname !== "/") return;
     const hash = window.location.hash.replace(/^#/, "");
     if (!hash) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = window.setTimeout(() => {
-      document.getElementById(hash)?.scrollIntoView({
-        behavior: reduce ? "auto" : "smooth",
-        block: "start",
-      });
+      scrollToId(hash);
     }, 80);
     return () => window.clearTimeout(timer);
   }, [pathname]);
@@ -122,7 +122,11 @@ export function Header() {
             <small>BROKER</small>
           </div>
         </Link>
-        <nav className={`nav${open ? " open" : ""}`} aria-label="Principal">
+        <nav
+          className={`nav${open ? " open" : ""}`}
+          aria-label="Principal"
+          {...(open ? { "data-lenis-prevent": "" } : {})}
+        >
           {NAV.map((item) =>
             item.href === "/blog" ? (
               <div
@@ -209,17 +213,19 @@ export function Header() {
               </Link>
             ),
           )}
-          <a className="btn btn-ghost nav-login" href={SITE.trade.login} onClick={closeMenus}>
-            Entrar
-          </a>
+          <div className="nav-mobile-account">
+            <CtaButton href={SITE.trade.login} size="sm" onClick={closeMenus}>
+              Entrar
+            </CtaButton>
+          </div>
         </nav>
         <div className="header-cta">
-          <a className="btn btn-ghost" href={SITE.trade.login}>
+          <CtaButton href={SITE.trade.login} size="sm" className="header-login">
             Entrar
-          </a>
-          <a className="btn btn-primary" href={SITE.trade.register}>
+          </CtaButton>
+          <CtaButton href={SITE.trade.register} size="sm">
             Abrir conta
-          </a>
+          </CtaButton>
           <button
             className="menu-btn"
             type="button"

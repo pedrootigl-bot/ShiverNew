@@ -29,7 +29,7 @@ const jsonLd = organizationJsonLd();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={inter.variable} data-scroll-behavior="smooth">
+    <html lang="pt-BR" className={inter.variable}>
       <head>
         <link rel="dns-prefetch" href="https://trade.shiverbroker.com" />
         <JsonLd data={jsonLd} />

@@ -10,10 +10,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  allowedDevOrigins: ["127.0.0.1"],
   experimental: {
     staleTimes: {
-      dynamic: 60,
-      static: 300,
+      dynamic: 0,
+      static: 0,
     },
   },
   compiler: {
@@ -32,6 +33,23 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isDev) {
+      return [
+        {
+          source: "/:path*",
+          headers: [
+            ...securityHeaders,
+            { key: "Cache-Control", value: "no-store, must-revalidate" },
+          ],
+        },
+        {
+          source: "/_next/static/:path*",
+          headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+        },
+      ];
+    }
+
     return [
       {
         source: "/:path*",

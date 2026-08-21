@@ -18,10 +18,10 @@ export function LaptopStage({ children }: { children?: ReactNode }) {
         <div className="laptop">
           <div className="laptop-lid">
             <Image
-              src="/media/Srhe0Ld9LN4eJAxMtjy6N4AJ8M.webp"
+              src="/media/shiver-platform-notebook.webp"
               alt="Plataforma da Shiver Broker no notebook"
-              width={1520}
-              height={900}
+              width={960}
+              height={540}
               quality={65}
               sizes="(max-width: 720px) 92vw, (max-width: 1100px) 80vw, 640px"
               loading="lazy"

@@ -1,21 +1,19 @@
 import Image from "next/image";
-import nextDynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { ASSETS, PAY_METHODS, SITE, TESTIMONIALS_A, TESTIMONIALS_B } from "@/lib/site";
 import { homeJsonLd, SEO } from "@/lib/seo";
+import { HeroClarezaOverlay } from "@/components/HeroClarezaOverlay";
 import { HeroStage } from "@/components/HeroStage";
 import { JsonLd } from "@/components/JsonLd";
 import { LazyAssetsGlobe } from "@/components/LazyAssetsGlobe";
-import { LazyMarketBoard } from "@/components/LazyMarketBoard";
-import { BlurTitle } from "@/components/BlurTitle";
+import { MarketPreview } from "@/components/MarketPreview";
+import { AppCopyReveal, AppMediaReveal, AppSec, AppSplit } from "@/components/AppSplitReveal";
+import { CtaButton } from "@/components/CtaButton";
+import { SectionScrollBlur } from "@/components/SectionScrollBlur";
+import { ScrollExpand } from "@/components/ScrollExpand";
 import { AssetLogo } from "@/components/AssetLogo";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
-
-const LaptopStage = nextDynamic(
-  () => import("@/components/LaptopStage").then((mod) => ({ default: mod.LaptopStage })),
-  { ssr: true },
-);
 
 export const metadata: Metadata = {
   title: { absolute: SEO.titleHome },
@@ -81,13 +79,57 @@ function Review({
       <Stars value={t.stars} uid={uid} />
       <p>“{t.quote}”</p>
       <footer>
-        <Image src={t.photo} alt={duplicate ? "" : t.name} width={48} height={48} quality={75} sizes="48px" loading="lazy" unoptimized />
+        <Image src={t.photo} alt={duplicate ? "" : t.name} width={48} height={48} quality={70} sizes="48px" loading="lazy" />
         <div>
           <strong>{t.name}</strong>
           <small>{t.date}</small>
         </div>
       </footer>
     </article>
+  );
+}
+
+function assetSparkPath(ticker: string, up: boolean) {
+  let hash = 2166136261;
+  for (let i = 0; i < ticker.length; i += 1) hash = Math.imul(hash ^ ticker.charCodeAt(i), 16777619);
+  const count = 14;
+  const values: number[] = [];
+  let value = 10;
+  for (let i = 0; i < count; i += 1) {
+    hash = Math.imul(hash, 1664525) + 1013904223;
+    value += ((hash >>> 8) % 13) / 10 - 0.45;
+    values.push(value);
+  }
+  if (up && values[count - 1] < values[0]) values.reverse();
+  if (!up && values[count - 1] > values[0]) values.reverse();
+  const min = Math.min(...values);
+  const span = Math.max(...values) - min || 1;
+  const width = 64;
+  const height = 28;
+  const points = values.map((item, i) => {
+    const x = (i / (count - 1)) * width;
+    const y = height - 3 - ((item - min) / span) * (height - 6);
+    return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+  const line = points.join(" ");
+  return { line, area: `${line} L${width} ${height} L0 ${height} Z` };
+}
+
+function AssetSpark({ ticker, up, uid }: { ticker: string; up: boolean; uid: string }) {
+  const spark = assetSparkPath(ticker, up);
+  const color = up ? "#7dffb0" : "#ff7a88";
+  const fill = `spark-fill-${uid}`;
+  return (
+    <svg className="asset-spark" viewBox="0 0 64 28" aria-hidden>
+      <defs>
+        <linearGradient id={fill} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.38" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={spark.area} fill={`url(#${fill})`} />
+      <path d={spark.line} fill="none" stroke={color} strokeWidth="1.7" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -102,21 +144,29 @@ function AssetCarousel({
   return (
     <div className="asset-carousel">
       <div className={`asset-carousel-track${reverse ? " rev" : ""}`}>
-        {row.map((asset, i) => (
-          <article
-            className="market-asset-chip"
-            key={`${asset.ticker}-${i}`}
-            aria-hidden={i >= items.length || undefined}
-          >
-            <span className="tick-logo">
-              <AssetLogo ticker={asset.ticker} />
-            </span>
-            <span>
-              <b>{asset.name}</b>
-              <small>{asset.payout}</small>
-            </span>
-          </article>
-        ))}
+        {row.map((asset, i) => {
+          const up = asset.change >= 0;
+          const sign = up ? "+" : "";
+          return (
+            <article
+              className={`market-asset-chip${up ? " is-up" : " is-dn"}`}
+              key={`${asset.ticker}-${i}`}
+              aria-hidden={i >= items.length || undefined}
+            >
+              <span className="tick-logo">
+                <AssetLogo ticker={asset.ticker} />
+              </span>
+              <span>
+                <b>{asset.name}</b>
+                <small>
+                  {sign}
+                  {asset.change.toFixed(2)}%
+                </small>
+              </span>
+              <AssetSpark ticker={asset.ticker} up={up} uid={`${asset.ticker}-${i}`} />
+            </article>
+          );
+        })}
       </div>
     </div>
   );
@@ -141,39 +191,173 @@ function Marquee({
   );
 }
 
+const FEATURES = [
+  {
+    title: "Suporte 24/7",
+    text: "Quando o mercado não dorme, a fila também não deveria existir. Gerentes prontos para quem está operando agora.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M4 12a8 8 0 0 1 16 0v6a2 2 0 0 1-2 2h-2v-6h4M4 18h4v-6H4" />
+      </svg>
+    ),
+  },
+  {
+    title: "Depósito e saque",
+    text: "Mais de 9 métodos. Entra rápido, sai rápido. Liquidez para quem não espera o sistema processar depois.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <rect x="3" y="6" width="18" height="12" rx="2" />
+        <path d="M3 10h18" />
+      </svg>
+    ),
+  },
+  {
+    title: "Execução rápida",
+    text: "Payout aparece, o atraso come o resultado. A Shiver foi feita para executar — não para carregar.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Liquidez global",
+    text: "Opere de qualquer lugar, nos ativos que o mercado está pedindo hoje. O fluxo não espera o fuso horário.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3c2.5 3 3.8 6 3.8 9s-1.3 6-3.8 9c-2.5-3-3.8-6-3.8-9s1.3-6 3.8-9Z" />
+      </svg>
+    ),
+  },
+];
+
 export const dynamic = "force-static";
 
 export default function HomePage() {
   return (
     <>
+      <link rel="preload" as="image" href="/media/preloader-fin.png" fetchPriority="high" />
       <JsonLd data={homeJsonLd()} />
-      <HeroStage />
-
-      <section className="section sec-1" id="plataforma" aria-labelledby="titulo-corretora">
-        <RevealGroup>
-          <div className="wrap sec-1-head">
-            <BlurTitle text="A Corretora dos Grandes Tubarões" />
-            <Reveal variant="blur">
-              <p className="lead">
-                A Shiver foi construída para quem exige performance, velocidade e controle absoluto nas operações. A
-                única com tecnologia avançada, confiança gráfica e vantagens diárias. Aqui, você não apenas opera. Você
-                evolui.
-              </p>
-            </Reveal>
-          </div>
-          <div className="sec-1-stage">
-            <div className="sec-1-arc-wrap" aria-hidden>
-              <div className="sec-1-arc" />
-            </div>
-            <LaptopStage>
-              <Reveal variant="up" delay={280} className="sec-1-cta">
-                <a className="btn btn-cta btn-lg" href={SITE.trade.register}>
-                  Quero operar na Shiver <span aria-hidden>→</span>
-                </a>
+      <HeroClarezaOverlay
+        hero={<HeroStage overlayDriven />}
+        panel={
+          <div className="wrap">
+            <RevealGroup className="matter-grid">
+              <Reveal variant="left">
+                <div className="matter-copy">
+                  <h2 id="titulo-corretora">
+                    Tecnologia para ler o mercado com <span className="accent">clareza</span>
+                  </h2>
+                  <p className="lead">
+                    Dados em tempo real, algoritmos proprietários e uma interface intuitiva para transformar informação em
+                    decisão. Mais performance, menos ruído, mais confiança.
+                  </p>
+                  <CtaButton href={SITE.trade.register} className="matter-cta">
+                    Quero operar na Shiver <span aria-hidden>→</span>
+                  </CtaButton>
+                  <ul className="matter-points">
+                    <li>
+                      <span className="matter-point-ico" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                          <path d="M3 12h4l2.2-6 3.6 12 2.2-6H21" />
+                        </svg>
+                      </span>
+                      Leitura em tempo real
+                    </li>
+                    <li>
+                      <span className="matter-point-ico" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                          <path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" />
+                        </svg>
+                      </span>
+                      Execução rápida
+                    </li>
+                    <li>
+                      <span className="matter-point-ico" aria-hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                          <circle cx="12" cy="12" r="8" />
+                          <circle cx="12" cy="12" r="2.4" />
+                          <path d="M12 4v2.4M12 17.6V20M4 12h2.4M17.6 12H20" />
+                        </svg>
+                      </span>
+                      Análise objetiva
+                    </li>
+                  </ul>
+                </div>
               </Reveal>
-            </LaptopStage>
+              <Reveal variant="scale">
+                <div className="matter-visual">
+                  <div className="clareza-overlay__cards" data-overlay-cards>
+                    <Image
+                      className="matter-cards"
+                      src="/media/matter-cards.webp"
+                      alt="Latência média 8,7 ms, uptime 99,99% e performance acumulada de 27,34% no ano"
+                      width={577}
+                      height={433}
+                      quality={80}
+                      sizes="(max-width: 900px) 88vw, 560px"
+                    />
+                  </div>
+                </div>
+              </Reveal>
+            </RevealGroup>
           </div>
-        </RevealGroup>
+        }
+      />
+
+      <div className="site-rest">
+
+      <section className="section" id="parceiros">
+        <div className="wrap">
+          <RevealGroup>
+            <Reveal variant="blur">
+              <div className="sec-head">
+                <h2>
+                  Por que a <span className="accent">Shiver?</span>
+                </h2>
+                <p className="lead">
+                  Não é para quem opera de vez em quando. É para quem quer as mesmas armas de quem já está no topo.
+                </p>
+              </div>
+            </Reveal>
+            <div className="feature-grid">
+              {FEATURES.map((item, i) => (
+                <Reveal key={item.title} variant="rise" delay={i * 120}>
+                  <article className="feature-card hover-lift">
+                    <span className="feature-ico">{item.icon}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </RevealGroup>
+        </div>
+      </section>
+
+      <section className="section sec-1" aria-label="Plataforma no notebook">
+        <ScrollExpand
+          src="/media/shiver-platform-notebook.webp"
+          alt="Plataforma da Shiver Broker no notebook"
+          title="A plataforma"
+          scrollHint="Role"
+          useWindowScroll
+          startWidth={64}
+          startHeight={48}
+          startRadius={18}
+          endRadius={0}
+          mediaZoom={1.06}
+          scrollDistance={0.48}
+          holdDistance={0.1}
+          smoothing={0.055}
+        >
+          <h2>Gráfico, ordem e payout no mesmo lugar</h2>
+          <p>A tela que o trader destaque não empresta. Abra e opere.</p>
+          <CtaButton href={SITE.trade.register} size="lg" tone="blue">
+            Ver a plataforma <span aria-hidden>→</span>
+          </CtaButton>
+        </ScrollExpand>
       </section>
 
       <section className="section payout">
@@ -199,7 +383,7 @@ export default function HomePage() {
                   <h2 className="payout-title">
                     <span>O payout que o mercado</span>
                     <span>comum não entrega.</span>
-                    <span>Acesso aberto agora.</span>
+                    <span className="accent">Acesso aberto agora.</span>
                   </h2>
                   <p>
                     Mais de 392 ativos em forex, binárias, blitz e crypto. Enquanto proliferam corretoras iguais, quem busca
@@ -208,60 +392,65 @@ export default function HomePage() {
                 </div>
               </Reveal>
               <Reveal variant="up" className="payout-cta-cell">
-                <a className="btn btn-cta" href={SITE.trade.register}>
+                <CtaButton href={SITE.trade.register}>
                   Quero esse acesso <span aria-hidden>→</span>
-                </a>
+                </CtaButton>
               </Reveal>
             </div>
           </RevealGroup>
         </div>
       </section>
 
-      <section className="section eco-sec" id="parceiros">
+      <section className="section market-sec" id="mercado" aria-labelledby="titulo-mercado">
+        <SectionScrollBlur sectionId="mercado" />
         <div className="wrap">
           <RevealGroup>
-            <Reveal variant="rise">
-              <div className="eco-head">
-                <h2>O ecossistema que os predadores escolhem</h2>
-                <p className="lead">
-                  Não é para quem opera de vez em quando. É para quem quer as mesmas armas de quem já está no topo — e não
-                  pretende ficar na fila da próxima oportunidade.
+            <Reveal className="market-layout">
+            <div className="market-copy-cell">
+              <article className="market-copy-card">
+                <span className="payout-badge" data-unblur>
+                  Gráfico, ordem e payout
+                </span>
+                <h2 id="titulo-mercado" data-unblur>
+                  A plataforma que o trader destaque não <span className="accent">empresta</span>
+                </h2>
+                <p className="lead" data-unblur>
+                  Gráfico, ordem e resultado no mesmo lugar. Rápida o suficiente para quem disputa o milissegundo — e clara
+                  o bastante para você querer abrir a próxima operação agora.
                 </p>
-              </div>
-            </Reveal>
-            <div className="grid-4 eco">
-              {[
-                ["Suporte 24/7 de verdade", "Quando o mercado não dorme, a fila também não deveria existir. Gerentes prontos para quem está operando agora."],
-                ["Depósito e saque no seu ritmo", "Mais de 9 métodos. Entra rápido, sai rápido. Liquidez para quem não espera o sistema “processar depois”."],
-                ["Velocidade que o segundo decide", "Payout aparece, o atraso come o resultado. A Shiver foi feita para executar — não para carregar."],
-                ["Liquidez global, demanda real", "Opere de qualquer lugar, nos ativos que o mercado está pedindo hoje. O fluxo não espera o fuso horário."],
-              ].map(([title, text], i) => (
-                <Reveal
-                  key={title}
-                  solo
-                  variant="rise"
-                  delay={i * 220}
-                  enterRatio={0.22}
-                  rootMargin="0px 0px -16% 0px"
-                >
-                  <article className="card hover-lift">
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                  </article>
-                </Reveal>
-              ))}
+                <div className="asset-carousel-stack" aria-label="Ações em destaque" data-unblur>
+                  <AssetCarousel items={ASSETS.slice(0, 6)} />
+                  <AssetCarousel items={ASSETS.slice(6)} reverse />
+                </div>
+                <div className="market-actions" data-unblur>
+                  <CtaButton href={SITE.trade.register}>
+                    Quero esse acesso <span aria-hidden>→</span>
+                  </CtaButton>
+                  <CtaButton href={SITE.trade.trial}>
+                    Testar com $10.000
+                  </CtaButton>
+                </div>
+              </article>
             </div>
+            <div className="market-chart-cell" data-unblur>
+              <div className="market-chart-blur">
+                <MarketPreview />
+              </div>
+            </div>
+          </Reveal>
           </RevealGroup>
         </div>
       </section>
 
-      <section className="section vip-sec" id="vip">
+      <section className="section vip-sec">
         <div className="vip-block">
-          <RevealGroup replay>
+          <RevealGroup>
             <div className="wrap">
               <Reveal variant="blur">
                 <div className="vip-head">
-                  <h2>VIP não é status. É fila preferencial.</h2>
+                  <h2>
+                    VIP não é status. É fila <span className="accent">preferencial</span>
+                  </h2>
                   <p className="lead">
                     <em>A conta padrão vê o mercado. O VIP opera na frente dele.</em> A.I Financial™, saque prioritário e o
                     que o restante da plataforma ainda não mostra.{" "}
@@ -277,15 +466,15 @@ export default function HomePage() {
                     "Cupons e condições que não aparecem no cadastro padrão",
                     "Premiações presenciais para quem já saiu da média",
                   ].map((text, i) => (
-                    <Reveal key={text} variant="left" delay={1200 + i * 100}>
+                    <Reveal key={text} delay={i * 80}>
                       <article className="vip-box">{text}</article>
                     </Reveal>
                   ))}
                 </div>
                 <Reveal variant="scale" delay={180} className="vip-core-cell">
                   <div className="vip-core">
-                    <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={768} height={853} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" unoptimized />
-                    <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={768} height={863} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" unoptimized />
+                    <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={480} height={533} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" decoding="async" />
+                    <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={480} height={539} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" decoding="async" />
                   </div>
                 </Reveal>
                 <div className="vip-col vip-col-right">
@@ -294,15 +483,15 @@ export default function HomePage() {
                     "Suporte gerenciado: você não entra na fila geral",
                     "Saques com prioridade, limite e ritmo de quem opera pesado",
                   ].map((text, i) => (
-                    <Reveal key={text} variant="right" delay={1200 + i * 100}>
+                    <Reveal key={text} delay={i * 80}>
                       <article className="vip-box">{text}</article>
                     </Reveal>
                   ))}
                 </div>
-                <Reveal variant="up" delay={1550} className="vip-cta">
-                  <a className="btn btn-white" href={SITE.trade.trial}>
+                <Reveal delay={240} className="vip-cta">
+                  <CtaButton href={SITE.trade.trial}>
                     Quero as vantagens VIP <span aria-hidden>→</span>
-                  </a>
+                  </CtaButton>
                 </Reveal>
               </div>
           </RevealGroup>
@@ -315,7 +504,9 @@ export default function HomePage() {
         <div className="wrap">
           <RevealGroup>
             <Reveal variant="left">
-              <h2>Três passos. O mercado não espera o quarto.</h2>
+              <h2>
+                Três passos. O mercado não espera o <span className="accent">quarto</span>
+              </h2>
             </Reveal>
             <div className="steps">
               {[
@@ -323,7 +514,7 @@ export default function HomePage() {
                 ["02", "Deposite quando quiser", "Mais de 9 métodos. Entre com a banca que cabe em você — a vaga na Shiver já é sua."],
                 ["03", "Opere onde o payout está", "380+ ativos e ferramentas que quem só assiste de fora não usa. A demanda está na tela."],
               ].map(([n, title, text], i) => (
-                <Reveal key={n} variant="rise" delay={i * 520}>
+                <Reveal key={n} delay={i * 120}>
                   <article className="card hover-lift">
                     <div className="step-n">{n}</div>
                     <h3>{title}</h3>
@@ -333,9 +524,9 @@ export default function HomePage() {
               ))}
             </div>
             <div className="app-cta">
-              <a className="btn btn-cta" href={SITE.trade.register}>
+              <CtaButton href={SITE.trade.register}>
                 Criar minha conta <span aria-hidden>→</span>
-              </a>
+              </CtaButton>
             </div>
           </RevealGroup>
         </div>
@@ -348,14 +539,16 @@ export default function HomePage() {
               <Reveal variant="left">
                 <div className="pay-copy">
                   <p className="kicker">Depósito e saque</p>
-                  <h2 id="titulo-liquidez">O dinheiro entra. O dinheiro sai. Sem teatro.</h2>
+                  <h2 id="titulo-liquidez">
+                    O dinheiro entra. O dinheiro sai. Sem <span className="accent">teatro</span>
+                  </h2>
                   <p className="lead">
                     Mais de 9 métodos. Os depoimentos falam de saque que cai; aqui você vê o caminho — crypto, cartão e
                     internacional. O método liberado aparece na sua conta depois do cadastro.
                   </p>
-                  <a className="btn btn-cta" href={SITE.trade.register}>
+                  <CtaButton href={SITE.trade.register}>
                     Quero depositar do meu jeito <span aria-hidden>→</span>
-                  </a>
+                  </CtaButton>
                 </div>
               </Reveal>
               <Reveal variant="clip">
@@ -363,24 +556,19 @@ export default function HomePage() {
                   <Image
                     src="/media/pay-hero.webp"
                     alt="Ilustração de saque na plataforma Shiver Broker"
-                    width={1200}
-                    height={675}
-                    quality={60}
+                    width={960}
+                    height={640}
+                    quality={70}
                     sizes="(max-width: 1100px) 100vw, 48vw"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </Reveal>
             </div>
             <div className="pay-methods">
               {PAY_METHODS.map((method) => (
-                <Reveal
-                  key={method.name}
-                  solo
-                  variant="rise"
-                  enterRatio={0.28}
-                  rootMargin="0px 0px -22% 0px"
-                >
+                <Reveal key={method.name} delay={80}>
                   <article className="pay-method hover-lift">
                     <Image
                       src={method.image}
@@ -390,6 +578,7 @@ export default function HomePage() {
                       quality={65}
                       sizes="(max-width: 720px) 70vw, 180px"
                       loading="lazy"
+                      decoding="async"
                     />
                     <h3>{method.name}</h3>
                     <p>{method.text}</p>
@@ -405,52 +594,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section market-sec" id="mercado" aria-labelledby="titulo-mercado">
-        <div className="wrap">
-          <RevealGroup className="market-layout">
-            <Reveal variant="right" className="market-copy-cell">
-              <article className="market-copy-card">
-                <span className="payout-badge">Gráfico, ordem e payout</span>
-                <h2 id="titulo-mercado">A plataforma que o trader destaque não empresta.</h2>
-                <p className="lead">
-                  Gráfico, ordem e resultado no mesmo lugar. Rápida o suficiente para quem disputa o milissegundo — e clara
-                  o bastante para você querer abrir a próxima operação agora.
-                </p>
-                <ul className="market-legend" aria-label="Legenda do gráfico">
-                  <li>
-                    <i className="lg-up" aria-hidden />
-                    Alta nas últimas 24h
-                  </li>
-                  <li>
-                    <i className="lg-dn" aria-hidden />
-                    Queda nas últimas 24h
-                  </li>
-                  <li>
-                    <i className="lg-pay" aria-hidden />
-                    Payout em evidência
-                  </li>
-                </ul>
-                <div className="asset-carousel-stack" aria-label="Ações com payout em evidência">
-                  <AssetCarousel items={ASSETS.slice(0, 6)} />
-                  <AssetCarousel items={ASSETS.slice(6)} reverse />
-                </div>
-                <div className="market-actions">
-                  <a className="btn btn-cta" href={SITE.trade.register}>
-                    Quero esse acesso <span aria-hidden>→</span>
-                  </a>
-                  <a className="btn btn-ghost" href={SITE.trade.trial}>
-                    Testar com $10.000
-                  </a>
-                </div>
-              </article>
-            </Reveal>
-            <Reveal variant="tilt" className="market-chart-cell">
-              <LazyMarketBoard />
-            </Reveal>
-          </RevealGroup>
-        </div>
-      </section>
-
       <section className="section globe-sec">
         <div className="wrap">
           <RevealGroup className="globe-layout">
@@ -458,7 +601,9 @@ export default function HomePage() {
               <LazyAssetsGlobe />
             </Reveal>
             <Reveal className="globe-layout-copy" variant="right">
-              <h2>230+ ativos globais. A demanda do mundo, na sua tela.</h2>
+              <h2>
+                230+ ativos globais. A demanda do mundo, na sua <span className="accent">tela</span>
+              </h2>
               <p className="lead">
                 Forex, crypto e opções digitais. Compre ou venda no fluxo que o mercado está pagando hoje — não no que a
                 corretora genérica libera amanhã. Abra a plataforma e escolha o ativo.
@@ -468,89 +613,65 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section app-sec" id="tecnologia">
-        <div className="app-bg" aria-hidden>
-          <Image
-            src="/media/omy1oeY65x0sQauj2yrxvOOhMbc.webp"
-            alt=""
-            fill
-            quality={50}
-            sizes="100vw"
-            loading="lazy"
-          />
-        </div>
-        <div className="app-mesh" aria-hidden />
-        <div className="wrap">
-          <RevealGroup>
-            <Reveal variant="rise">
+      <AppSec>
+        <AppSplit>
+          <AppCopyReveal>
               <div className="app-head">
-                <h2>Leve o mesmo nível premium para o bolso. O mercado não fica no desktop.</h2>
+                <h2>
+                  Leve o mesmo nível premium para o bolso. O mercado não fica no <span className="accent">desktop</span>
+                </h2>
               </div>
-            </Reveal>
-            <Reveal variant="scale">
-              <div className="phone-stage">
-            <article className="glass-card gc-tl hover-lift">
-              <span className="g-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                  <path d="M12 3 5 6.5v5.2c0 4.3 2.9 8.2 7 9.3 4.1-1.1 7-5 7-9.3V6.5L12 3Z" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
-              </span>
-              <h3>Plataforma segura</h3>
-              <p>Proteção para operar sem deixar a oportunidade na mesa.</p>
-            </article>
-            <article className="glass-card gc-bl hover-lift">
-              <span className="g-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                  <path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" />
-                </svg>
-              </span>
-              <h3>Execução instantânea</h3>
-              <p>Quando o segundo decide, atraso é deixar o payout para outro.</p>
-            </article>
-            <Image
-              className="phone-center float-soft"
-              src="/media/hFx1A5DWkIK1NNFwYsHEPjAUW0.webp"
-              alt="Aplicativo Shiver Broker no celular"
-              width={380}
-              height={780}
-              quality={70}
-              sizes="(max-width: 900px) 70vw, 300px"
-              style={{ height: "auto" }}
-              loading="lazy"
-            />
-            <article className="glass-card gc-tr hover-lift">
-              <span className="g-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                  <path d="M4 19V9M10 19V5M16 19v-7M22 19V3" />
-                </svg>
-              </span>
-              <h3>Trading direto</h3>
-              <p>Menos cliques entre a ideia e a ordem. Abra e teste.</p>
-            </article>
-            <article className="glass-card gc-br hover-lift">
-              <span className="g-icon" aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M3 12h18M12 3c2.5 3 3.8 6 3.8 9s-1.3 6-3.8 9c-2.5-3-3.8-6-3.8-9s1.3-6 3.8-9Z" />
-                </svg>
-              </span>
-              <h3>Mercados globais</h3>
-              <p>A demanda de vários ativos, num só login. Entra quem quer operar.</p>
-            </article>
+              <p className="lead">
+                A mesma execução, os mesmos mercados e a mesma proteção — agora no celular. Sem perder o ritmo de quem já opera no desktop.
+              </p>
+              <ul className="matter-points">
+                <li>
+                  <span className="matter-point-ico" aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                      <path d="M12 3 5 6.5v5.2c0 4.3 2.9 8.2 7 9.3 4.1-1.1 7-5 7-9.3V6.5L12 3Z" />
+                      <path d="m9 12 2 2 4-4" />
+                    </svg>
+                  </span>
+                  Plataforma segura
+                </li>
+                <li>
+                  <span className="matter-point-ico" aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                      <path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" />
+                    </svg>
+                  </span>
+                  Execução instantânea
+                </li>
+                <li>
+                  <span className="matter-point-ico" aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                      <path d="M4 19V9M10 19V5M16 19v-7M22 19V3" />
+                    </svg>
+                  </span>
+                  Trading direto
+                </li>
+                <li>
+                  <span className="matter-point-ico" aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M3 12h18M12 3c2.5 3 3.8 6 3.8 9s-1.3 6-3.8 9c-2.5-3-3.8-6-3.8-9s1.3-6 3.8-9Z" />
+                    </svg>
+                  </span>
+                  Mercados globais
+                </li>
+              </ul>
+              <div className="app-cta">
+                <CtaButton href={SITE.trade.trial} size="lg">
+                  Testar na plataforma <span aria-hidden>→</span>
+                </CtaButton>
+                <CtaButton href={SITE.trade.login} size="lg">
+                  Já tenho conta
+                </CtaButton>
               </div>
-            </Reveal>
-          <div className="app-cta">
-            <a className="btn btn-cta btn-lg" href={SITE.trade.trial}>
-              Testar na plataforma <span aria-hidden>→</span>
-            </a>
-            <a className="btn btn-ghost" href={SITE.trade.login}>
-              Já tenho conta
-            </a>
-          </div>
-          </RevealGroup>
-        </div>
-      </section>
+          </AppCopyReveal>
+          <AppMediaReveal />
+        </AppSplit>
+      </AppSec>
 
       <section className="section cta-journey" aria-labelledby="cta-journey-title">
         <div className="wrap">
@@ -575,16 +696,18 @@ export default function HomePage() {
               </div>
             </Reveal>
             <Reveal variant="right" className="cta-journey-title">
-              <h2 id="cta-journey-title">Seja o trader que trilha a jornada premium com eficiência</h2>
+              <h2 id="cta-journey-title">
+                Seja o trader que trilha a jornada premium com <span className="accent">eficiência</span>
+              </h2>
             </Reveal>
             <Reveal variant="right" className="cta-journey-actions-wrap">
               <div className="cta-journey-actions">
-                <a className="btn btn-cta btn-lg" href={SITE.trade.trial}>
+                <CtaButton href={SITE.trade.trial} size="lg" tone="blue">
                   Testar grátis <span aria-hidden>→</span>
-                </a>
-                <a className="btn btn-white btn-lg" href={SITE.trade.login}>
+                </CtaButton>
+                <CtaButton href={SITE.trade.login} size="lg">
                   Entrar
-                </a>
+                </CtaButton>
               </div>
             </Reveal>
           </RevealGroup>
@@ -595,13 +718,16 @@ export default function HomePage() {
         <RevealGroup>
           <div className="wrap">
             <Reveal variant="left">
-              <h2>Eles pararam de procurar outra corretora. Leia o porquê.</h2>
+              <h2>
+                Eles pararam de procurar outra <span className="accent">corretora</span>
+              </h2>
             </Reveal>
           </div>
           <Marquee items={TESTIMONIALS_A} />
           <Marquee items={TESTIMONIALS_B} reverse />
         </RevealGroup>
       </section>
+      </div>
     </>
   );
 }

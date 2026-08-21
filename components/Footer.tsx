@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { CtaButton } from "@/components/CtaButton";
 import { NAV, PDFS, SITE } from "@/lib/site";
 
 const FOOTER_LEGAL = [
+  { label: "Sobre", href: "/sobre" },
   { label: "Privacidade", href: "/legal/privacy" },
   { label: "Termos e condições", href: "/legal/terms" },
   { label: "Termos África do Sul", href: "/legal/terms-south-africa" },
@@ -26,12 +28,12 @@ export function Footer() {
               {SITE.email}
             </a>
             <div className="footer-cta">
-              <a className="btn btn-ghost" href={SITE.trade.login}>
+              <CtaButton href={SITE.trade.login} size="sm">
                 Entrar
-              </a>
-              <a className="btn btn-primary" href={SITE.trade.register}>
+              </CtaButton>
+              <CtaButton href={SITE.trade.register} size="sm">
                 Abrir conta
-              </a>
+              </CtaButton>
             </div>
           </div>
           <div>

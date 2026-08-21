@@ -10,9 +10,8 @@ export function Reveal({
   children,
   className = "",
   delay = 0,
-  variant = "up",
   solo = false,
-  enterRatio = 0.12,
+  enterRatio = 0.1,
   rootMargin = "0px",
 }: {
   children: ReactNode;
@@ -24,14 +23,14 @@ export function Reveal({
   rootMargin?: string;
 }) {
   const grouped = useGroupReveal();
-  const own = useInViewReplay<HTMLDivElement>(enterRatio, rootMargin);
   const independent = solo || grouped === null;
+  const own = useInViewReplay<HTMLDivElement>(enterRatio, rootMargin, false, independent);
   const on = independent ? own.on : grouped;
 
   return (
     <div
       ref={independent ? own.ref : undefined}
-      className={`reveal reveal-${variant}${on ? " in" : ""} ${className}`}
+      className={`reveal${on ? " in" : ""} ${className}`.trim()}
       style={{ "--d": `${delay}ms` } as CSSProperties}
     >
       {children}
