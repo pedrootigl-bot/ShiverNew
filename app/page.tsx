@@ -296,8 +296,46 @@ export default function HomePage() {
                       width={577}
                       height={433}
                       quality={80}
-                      sizes="(max-width: 900px) 88vw, 560px"
+                      sizes="(max-width: 1100px) 1px, 560px"
                     />
+                    <ul className="matter-stats" aria-label="Latência média 8,7 ms, uptime 99,99% e performance acumulada de 27,34% no ano">
+                      <li className="matter-stat">
+                        <span className="matter-stat-ico" aria-hidden>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                            <circle cx="12" cy="12" r="8.2" />
+                            <path d="M12 7.8V12l2.8 1.7" />
+                          </svg>
+                        </span>
+                        <small>Latência média</small>
+                        <strong>8,7ms</strong>
+                        <span className="matter-stat-hint">Execução ultra rápida</span>
+                      </li>
+                      <li className="matter-stat">
+                        <span className="matter-stat-ico" aria-hidden>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                            <path d="M12 3 5 6.5v5.2c0 4.3 2.9 8.2 7 9.3 4.1-1.1 7-5 7-9.3V6.5L12 3Z" />
+                            <path d="m9 12 2 2 4-4" />
+                          </svg>
+                        </span>
+                        <small>Uptime</small>
+                        <strong>99,99%</strong>
+                        <span className="matter-stat-hint">Estabilidade comprovada</span>
+                      </li>
+                      <li className="matter-stat matter-stat-chart">
+                        <span className="matter-stat-ico" aria-hidden>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                            <rect x="4" y="4" width="16" height="16" rx="3" />
+                            <path d="m8 14 3-3.2 2.4 2.2L16 9.5" />
+                          </svg>
+                        </span>
+                        <small>Performance acumulada</small>
+                        <strong>+27,34%</strong>
+                        <span className="matter-stat-hint">No ano</span>
+                        <svg className="matter-stat-wave" viewBox="0 0 180 54" aria-hidden>
+                          <path d="M0 40 C22 40 28 18 48 22 C68 26 74 8 96 14 C118 20 126 34 148 22 C162 14 170 12 180 8" />
+                        </svg>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </Reveal>
@@ -360,11 +398,12 @@ export default function HomePage() {
         </ScrollExpand>
       </section>
 
-      <section className="section payout">
+      <section className="section payout" id="payout">
+        <SectionScrollBlur sectionId="payout" />
         <div className="wrap">
           <RevealGroup className="payout-grid">
             <Reveal variant="up" className="payout-shot-cell">
-              <div className="payout-shot">
+              <div className="payout-shot" data-unblur>
                 <img
                   className="payout-shot__media"
                   src="/media/payout-trader.webp"
@@ -379,22 +418,24 @@ export default function HomePage() {
             <div className="payout-right">
               <Reveal variant="right" className="payout-copy-cell">
                 <div className="payout-copy">
-                  <span className="payout-badge">Até 97% de payout em crypto</span>
-                  <h2 className="payout-title">
+                  <span className="payout-badge" data-unblur>Até 97% de payout em crypto</span>
+                  <h2 className="payout-title" data-unblur>
                     <span>O payout que o mercado</span>
                     <span>comum não entrega.</span>
                     <span className="accent">Acesso aberto agora.</span>
                   </h2>
-                  <p>
+                  <p data-unblur>
                     Mais de 392 ativos em forex, binárias, blitz e crypto. Enquanto proliferam corretoras iguais, quem busca
                     payout alto e execução limpa vem para a Shiver. Abra a conta e veja o que os outros só comentam.
                   </p>
                 </div>
               </Reveal>
               <Reveal variant="up" className="payout-cta-cell">
-                <CtaButton href={SITE.trade.register}>
-                  Quero esse acesso <span aria-hidden>→</span>
-                </CtaButton>
+                <div data-unblur>
+                  <CtaButton href={SITE.trade.register}>
+                    Quero esse acesso <span aria-hidden>→</span>
+                  </CtaButton>
+                </div>
               </Reveal>
             </div>
           </RevealGroup>

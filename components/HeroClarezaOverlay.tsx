@@ -78,7 +78,7 @@ export function HeroClarezaOverlay({
 
       const scaleTo = compact ? 0.98 : 0.96;
       const blurTo = compact ? 3 : 8;
-      const cardsP = clamp((overlayP - 0.55) / 0.22, 0, 1);
+      const cardsP = clamp((overlayP - (compact ? 0.18 : 0.55)) / (compact ? 0.32 : 0.22), 0, 1);
 
       root.style.setProperty("--ov-y", `${((1 - overlayP) * 100).toFixed(2)}%`);
       root.style.setProperty("--ov-radius", `${(32 * (1 - overlayP)).toFixed(2)}px`);

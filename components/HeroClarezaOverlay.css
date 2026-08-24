@@ -134,9 +134,135 @@
     --overlay-run: 100vh;
   }
 
-  .clareza-overlay__panel.section {
-    padding: 84px 0 28px;
+  .clareza-overlay__frame {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .clareza-overlay__prev {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+
+  .clareza-overlay__panel {
+    position: absolute;
+    inset: 0;
     align-items: start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .clareza-overlay__panel.section {
+    padding: 52px 0 max(84px, calc(env(safe-area-inset-bottom) + 72px));
+    align-items: start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .clareza-overlay .wrap {
+    width: 100%;
+    max-width: 100%;
+    padding-left: max(22px, env(safe-area-inset-left));
+    padding-right: max(22px, env(safe-area-inset-right));
+    box-sizing: border-box;
+  }
+
+  .clareza-overlay .matter-grid {
+    gap: 8px;
+  }
+
+  .clareza-overlay .matter-grid h2 {
+    font-size: clamp(1.28rem, 6.4vw, 1.7rem);
+    line-height: 1.16;
+  }
+
+  .clareza-overlay .matter-copy .lead,
+  .clareza-overlay .matter-grid .lead {
+    max-width: none;
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .clareza-overlay .matter-grid .matter-points {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .clareza-overlay .matter-copy .btn,
+  .clareza-overlay .matter-cta {
+    margin-top: 2px;
+    min-height: 44px;
+  }
+
+  .clareza-overlay .matter-visual {
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .clareza-overlay__cards {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .clareza-overlay__cards .matter-cards {
+    display: none;
+    animation: none;
+  }
+
+  .clareza-overlay__cards .matter-stats {
+    display: grid;
+    gap: 8px;
+    padding: 2px 0 4px;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 740px) {
+  .clareza-overlay__panel.section {
+    padding-top: 44px;
+    padding-bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+  }
+
+  .clareza-overlay .matter-grid h2 {
+    font-size: clamp(1.12rem, 5.6vw, 1.42rem);
+  }
+
+  .clareza-overlay .matter-grid .lead {
+    font-size: 13px;
+    line-height: 1.38;
+  }
+
+  .clareza-overlay .matter-grid .matter-points {
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .clareza-overlay .matter-grid .matter-points li {
+    font-size: 12px;
+  }
+
+  .clareza-overlay .matter-point-ico {
+    width: 22px;
+    height: 22px;
+  }
+
+  .clareza-overlay__cards .matter-stats {
+    gap: 6px;
+  }
+
+  .clareza-overlay .matter-stat {
+    padding: 8px 10px;
   }
 }
 
