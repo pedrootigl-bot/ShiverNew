@@ -46,7 +46,7 @@ export default function SobrePage() {
           Limassol, Chipre.
         </p>
         <p>
-          Os artigos do blog são assinados por <strong>{BLOG_AUTHOR.name}</strong>, {BLOG_AUTHOR.role.toLowerCase()} da
+          Os artigos do blog são assinados por <strong id="autor">{BLOG_AUTHOR.name}</strong>, {BLOG_AUTHOR.role.toLowerCase()} da
           Shiver Broker. Dúvidas: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
         </p>
       </section>

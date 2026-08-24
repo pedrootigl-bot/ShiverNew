@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
-import { adjacentPosts, getPost, morePosts, type PostSlug } from "@/lib/blog";
+import { adjacentPosts, formatPostDate, getPost, morePosts, type PostSlug } from "@/lib/blog";
 import { hasPostBody, postBodies } from "@/lib/blog-bodies";
 import { canPrefetch } from "@/lib/network";
 import { BLOG_AUTHOR, SITE } from "@/lib/site";
@@ -24,6 +24,13 @@ export function PostArticle({ slug }: { slug: string }) {
     <RevealGroup>
       <article className="blog-page wrap post-page">
         <Reveal variant="left">
+          <nav className="post-crumbs" aria-label="Trilha">
+            <Link href="/">Início</Link>
+            <span aria-hidden>/</span>
+            <Link href="/blog">Blog</Link>
+            <span aria-hidden>/</span>
+            <span>{post.navTitle}</span>
+          </nav>
           <p className="blog-back">
             <Link
               href="/blog"
@@ -40,7 +47,9 @@ export function PostArticle({ slug }: { slug: string }) {
           <Reveal variant="blur" delay={40}>
             <p className="post-head-meta">
               <span className="blog-card-cat">{post.category}</span>
-              <small>{post.displayDate}</small>
+              <small>
+                <time dateTime={post.date}>{post.displayDate}</time>
+              </small>
             </p>
           </Reveal>
           <Reveal variant="left" delay={80}>
@@ -50,7 +59,13 @@ export function PostArticle({ slug }: { slug: string }) {
             Por <Link href="/sobre">{BLOG_AUTHOR.name}</Link>
             <span className="post-byline-role">{BLOG_AUTHOR.role}</span>
             <span aria-hidden> · </span>
-            Publicado em {post.displayDate}
+            Publicado em <time dateTime={post.date}>{post.displayDate}</time>
+            {post.updated !== post.date ? (
+              <>
+                <span aria-hidden> · </span>
+                Atualizado em <time dateTime={post.updated}>{formatPostDate(post.updated)}</time>
+              </>
+            ) : null}
           </p>
         </header>
         <Reveal variant="rise" delay={120}>
@@ -115,7 +130,7 @@ export function PostArticle({ slug }: { slug: string }) {
                       <span className="post-card-media">
                         <Image
                           src={item.image}
-                          alt={item.navTitle}
+                          alt={item.title}
                           fill
                           sizes="(max-width: 720px) 92vw, 260px"
                           quality={60}
@@ -124,7 +139,7 @@ export function PostArticle({ slug }: { slug: string }) {
                       <p className="meta">
                         {item.category} · {item.displayDate}
                       </p>
-                      <h3>{item.navTitle}</h3>
+                      <h3>{item.title}</h3>
                       <p>{item.teaser}</p>
                       <strong className="post-more">Ler artigo →</strong>
                     </Link>

@@ -223,7 +223,7 @@ export function Header() {
           <CtaButton href={SITE.trade.login} size="sm" className="header-login">
             Entrar
           </CtaButton>
-          <CtaButton href={SITE.trade.register} size="sm">
+          <CtaButton href={SITE.trade.register} size="sm" tone="blue">
             Abrir conta
           </CtaButton>
           <button

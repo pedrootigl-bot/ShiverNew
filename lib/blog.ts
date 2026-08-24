@@ -1,5 +1,13 @@
 import { SITE } from "./site";
 
+const MONTHS_PT = ["jan.", "fev.", "mar.", "abr.", "maio", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
+
+export function formatPostDate(iso: string) {
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return `${date.getDate()} de ${MONTHS_PT[date.getMonth()]} de ${date.getFullYear()}`;
+}
+
 export const posts = [
   {
     slug: "opcoes-binarias",

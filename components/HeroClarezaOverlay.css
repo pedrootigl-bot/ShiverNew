@@ -1,6 +1,7 @@
 .clareza-overlay {
-  --overlay-hero: 70vh;
-  --overlay-run: 85vh;
+  --overlay-copy: 60vh;
+  --overlay-rest: 40vh;
+  --overlay-run: 120vh;
   --ov-y: 100%;
   --ov-radius: 32px;
   --ov-scale: 1;
@@ -11,7 +12,7 @@
   --ov-cards-y: 30px;
   --ov-edge: 1;
   position: relative;
-  height: calc(100svh + var(--overlay-hero) + var(--overlay-run));
+  height: calc(100svh + var(--overlay-copy) + var(--overlay-rest) + var(--overlay-run));
 }
 
 .clareza-overlay__frame {
@@ -128,8 +129,9 @@
 
 @media (max-width: 900px) {
   .clareza-overlay {
-    --overlay-hero: 24vh;
-    --overlay-run: 75vh;
+    --overlay-copy: 12vh;
+    --overlay-rest: 130vh;
+    --overlay-run: 100vh;
   }
 
   .clareza-overlay__panel.section {

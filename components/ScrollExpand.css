@@ -42,7 +42,7 @@
   height: 48%;
   border-radius: 18px;
   overflow: hidden;
-  background: #071018 url("/media/shiver-platform-notebook.webp") center / cover no-repeat;
+  background: #071018 url("/media/shiver-platform-notebook.webp?v=2") center / cover no-repeat;
   z-index: 1;
 }
 

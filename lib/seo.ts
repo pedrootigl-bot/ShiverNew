@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { posts, type Post } from "@/lib/blog";
+import { postBodies } from "@/lib/blog-bodies";
+import { postsByDate, type Post, type PostSlug } from "@/lib/blog";
 import { BLOG_AUTHOR, SITE } from "@/lib/site";
 
 export const SEO = {
   title: "Shiver Broker | Corretora Forex, Crypto e Opções",
   titleHome: "Shiver Broker | Corretora dos Grandes Tubarões — Forex, Crypto e Opções",
   titleBlog: "Blog Shiver Broker | Forex, Crypto, VIP e Como Investir",
+  titleBlogH1: "Blog da Shiver Broker",
+  descriptionBlog:
+    "Blog oficial da Shiver Broker: opções binárias, se a Shiver é confiável, programa VIP e o caminho da conta demo ao primeiro saque.",
   description: SITE.description,
   keywords: [
     "Shiver Broker",
@@ -27,8 +31,42 @@ const orgId = `${SITE.url}/#organization`;
 const brandId = `${SITE.url}/#brand`;
 const siteId = `${SITE.url}/#website`;
 const serviceId = `${SITE.url}/#service`;
+const authorId = `${SITE.url}/sobre#autor`;
 const logoUrl = `${SITE.url}/icon.png`;
 const ogUrl = `${SITE.url}/og.png`;
+
+export function pageAlternates(path: string): NonNullable<Metadata["alternates"]> {
+  return {
+    canonical: path,
+    languages: {
+      "pt-BR": path,
+      "x-default": path,
+    },
+  };
+}
+
+export function articleDocumentTitle(post: Post): Metadata["title"] {
+  return /shiver broker/i.test(post.title) ? { absolute: post.title } : post.title;
+}
+
+function authorPerson() {
+  return {
+    "@type": "Person",
+    "@id": authorId,
+    name: BLOG_AUTHOR.name,
+    jobTitle: BLOG_AUTHOR.role,
+    url: `${SITE.url}/sobre`,
+    worksFor: { "@id": orgId },
+  };
+}
+
+function articleWordCount(slug: string) {
+  const html = postBodies[slug as PostSlug];
+  if (!html) return undefined;
+  const text = html.replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/gi, " ").replace(/\s+/g, " ").trim();
+  const count = text.split(" ").filter(Boolean).length;
+  return count > 0 ? count : undefined;
+}
 
 function organizationNode() {
   return {
@@ -156,24 +194,36 @@ export function homeJsonLd() {
 }
 
 export function blogIndexJsonLd() {
+  const url = `${SITE.url}/blog`;
+  const listId = `${url}#list`;
+  const ordered = postsByDate();
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${SITE.url}/blog#webpage`,
-        url: `${SITE.url}/blog`,
-        name: SEO.titleBlog,
-        description:
-          "Blog oficial da Shiver Broker: opções binárias, confiabilidade, programa VIP e o caminho da conta demo ao primeiro saque.",
+        "@id": `${url}#webpage`,
+        url,
+        name: SEO.titleBlogH1,
+        headline: SEO.titleBlog,
+        description: SEO.descriptionBlog,
         inLanguage: "pt-BR",
         isPartOf: { "@id": siteId },
         about: { "@id": orgId },
+        publisher: { "@id": orgId },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: ogUrl,
+        },
+        mainEntity: { "@id": listId },
       },
       {
         "@type": "ItemList",
+        "@id": listId,
         name: "Artigos do blog Shiver Broker",
-        itemListElement: posts.map((post, index) => ({
+        numberOfItems: ordered.length,
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        itemListElement: ordered.map((post, index) => ({
           "@type": "ListItem",
           position: index + 1,
           url: `${SITE.url}/blog/${post.slug}`,
@@ -184,7 +234,7 @@ export function blogIndexJsonLd() {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Shiver Broker", item: SITE.url },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
+          { "@type": "ListItem", position: 2, name: "Blog", item: url },
         ],
       },
     ],
@@ -193,25 +243,25 @@ export function blogIndexJsonLd() {
 
 export function articleJsonLd(post: Post) {
   const url = `${SITE.url}/blog/${post.slug}`;
+  const words = articleWordCount(post.slug);
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Article",
+        "@type": "BlogPosting",
+        "@id": `${url}#article`,
         headline: post.title,
         datePublished: post.date,
         dateModified: post.updated,
         url,
-        mainEntityOfPage: url,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${url}#webpage`,
+          url,
+        },
         inLanguage: "pt-BR",
         articleSection: post.category,
-        author: {
-          "@type": "Person",
-          name: BLOG_AUTHOR.name,
-          jobTitle: BLOG_AUTHOR.role,
-          url: `${SITE.url}/sobre`,
-          worksFor: { "@id": orgId },
-        },
+        author: authorPerson(),
         publisher: {
           "@type": "Organization",
           "@id": orgId,
@@ -225,9 +275,14 @@ export function articleJsonLd(post: Post) {
           },
         },
         description: post.description,
-        image: `${SITE.url}${post.image}`,
+        image: {
+          "@type": "ImageObject",
+          url: `${SITE.url}${post.image}`,
+        },
         about: { "@type": "Thing", name: "Shiver Broker" },
         keywords: post.keywords.join(", "),
+        isPartOf: { "@id": siteId },
+        ...(words ? { wordCount: words } : {}),
       },
       {
         "@type": "BreadcrumbList",

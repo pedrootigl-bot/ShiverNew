@@ -63,11 +63,14 @@ export function HeroClarezaOverlay({
     const apply = (progress: number) => {
       const compact = mobile.matches;
       const styles = getComputedStyle(root);
-      const heroHold = readVh(styles.getPropertyValue("--overlay-hero"), compact ? 24 : 70);
-      const overlayRun = readVh(styles.getPropertyValue("--overlay-run"), compact ? 75 : 85);
-      const split = clamp(heroHold / (heroHold + overlayRun), 0.12, 0.7);
-      const heroP = clamp(progress / split, 0, 1);
-      const overlayP = clamp((progress - split) / (1 - split), 0, 1);
+      const copyHold = readVh(styles.getPropertyValue("--overlay-copy"), compact ? 12 : 60);
+      const restHold = readVh(styles.getPropertyValue("--overlay-rest"), compact ? 130 : 40);
+      const overlayRun = readVh(styles.getPropertyValue("--overlay-run"), compact ? 100 : 120);
+      const total = Math.max(copyHold + restHold + overlayRun, 1);
+      const copyEnd = clamp(copyHold / total, 0.03, 0.45);
+      const holdEnd = clamp((copyHold + restHold) / total, 0.15, 0.82);
+      const heroP = clamp(progress / copyEnd, 0, 1);
+      const overlayP = progress <= holdEnd ? 0 : clamp((progress - holdEnd) / (1 - holdEnd), 0, 1);
 
       heroEl.style.setProperty("--hero-p", heroP.toFixed(3));
       heroEl.style.setProperty("--hero-copy", heroP.toFixed(3));

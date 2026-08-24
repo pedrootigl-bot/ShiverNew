@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
 import { getPost, posts } from "@/lib/blog";
 import { hasPostBody } from "@/lib/blog-bodies";
-import { articleJsonLd } from "@/lib/seo";
+import { articleDocumentTitle, articleJsonLd, pageAlternates } from "@/lib/seo";
 import { BLOG_AUTHOR } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -21,11 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!post) return {};
   const url = `/blog/${post.slug}`;
   return {
-    title: post.title,
+    title: articleDocumentTitle(post),
     description: post.description,
     keywords: [...post.keywords],
     authors: [{ name: BLOG_AUTHOR.name, url: "/sobre" }],
-    alternates: { canonical: url },
+    alternates: pageAlternates(url),
     openGraph: {
       title: post.title,
       description: post.description,
@@ -37,6 +37,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: post.date,
       modifiedTime: post.updated,
       authors: [BLOG_AUTHOR.name],
+      section: post.category,
+      tags: [...post.keywords],
     },
     twitter: {
       card: "summary_large_image",

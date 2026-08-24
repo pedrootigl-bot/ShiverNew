@@ -32,7 +32,9 @@ export function PostCard({ post }: { post: Post }) {
       <div className="blog-card-body">
         <div className="blog-card-meta">
           <span className="blog-card-cat">{post.category}</span>
-          <small>{post.displayDate}</small>
+          <small>
+            <time dateTime={post.date}>{post.displayDate}</time>
+          </small>
         </div>
         <h2>{post.title}</h2>
         <p className="blog-card-author">

@@ -1,16 +1,18 @@
 # SEO — Shiver Broker
 
-Atualizado em 21 de agosto de 2026.
+Atualizado em 24 de agosto de 2026.
 
 ## O que o site envia ao Google
 
 - Título e descrição com **Shiver Broker**, forex, crypto e opções. Meta `keywords` curto (não lista de variações).
 - Canonical por página (home, blog, artigos, `/sobre` e legal).
+- Hreflang `pt-BR` e `x-default` do blog apontam para a própria URL, não para a home.
 - Open Graph e Twitter em home, blog e artigos. Artigos usam a imagem do post, não só o `og.png`.
 - `Organization`, `Brand`, `WebSite` e `FinancialService` no layout.
 - `WebPage` da home **somente na home**.
-- Blog: `CollectionPage` + `ItemList`.
-- Artigos: `Article` com autor Pessoa (Helena Prado, Analista de Conteúdo, `/sobre`), `dateModified`, imagem do post e breadcrumbs.
+- Blog: `CollectionPage` + `ItemList` na mesma ordem da listagem. H1 **Blog da Shiver Broker**.
+- Artigos: `BlogPosting` com autor Pessoa (Helena Prado, `/sobre#autor`), `dateModified`, `wordCount`, imagem e breadcrumbs visíveis.
+- Títulos de artigo que já trazem “Shiver Broker” não repetem `| Shiver Broker` na aba.
 - `/sobre`: `AboutPage` + breadcrumbs.
 - Legal: `WebPage` + breadcrumbs.
 - Sitemap com `/sobre` e `lastModified` dos posts (`updated`).
@@ -21,6 +23,12 @@ Atualizado em 21 de agosto de 2026.
 O Google não garante a 1ª posição para “Shiver”. O nicho é YMYL (dinheiro). Beleza, schema e CSS não substituem licença, autor humano e conteúdo útil contínuo.
 
 Não inventar `AggregateRating` nem FAQ schema sem o texto visível na página.
+
+## Feito no código (24/08) — blog
+
+- H1 da listagem alinhado à marca; meta, OG e Twitter com a mesma descrição.
+- Schema `BlogPosting`, lista na ordem visível, trilha visível e data de atualização na página.
+- Hreflang do `/blog` e dos artigos autocontido.
 
 ## Feito no código (21/08)
 

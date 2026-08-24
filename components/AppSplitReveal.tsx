@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { LazyTradingOrbit } from "@/components/LazyTradingOrbit";
+import { AppBolsoVideo } from "@/components/AppBolsoVideo";
 
 export function AppSec({ children }: { children: ReactNode }) {
   return (
@@ -19,9 +19,7 @@ export function AppMediaReveal() {
   return (
     <div className="app-media">
       <div className="app-media-frame">
-        <div className="app-media-zoom">
-          <LazyTradingOrbit />
-        </div>
+        <AppBolsoVideo />
       </div>
     </div>
   );

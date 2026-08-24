@@ -4,37 +4,29 @@ import { PostCard } from "@/components/PostCard";
 import { Reveal } from "@/components/Reveal";
 import { RevealGroup } from "@/components/RevealGroup";
 import { postsByDate } from "@/lib/blog";
-import { blogIndexJsonLd, SEO } from "@/lib/seo";
+import { blogIndexJsonLd, pageAlternates, SEO } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
 export const metadata: Metadata = {
   title: { absolute: SEO.titleBlog },
-  description:
-    "Blog oficial da Shiver Broker: opções binárias, se a Shiver é confiável, programa VIP e o caminho da conta demo ao primeiro saque.",
-  alternates: { canonical: "/blog" },
-  keywords: [
-    "Shiver",
-    "Shiver Broker",
-    "blog Shiver",
-    "Shiver investir",
-    "opções binárias",
-    "corretora Shiver",
-  ],
+  description: SEO.descriptionBlog,
+  alternates: pageAlternates("/blog"),
+  keywords: [...SEO.keywords, "blog Shiver Broker", "VIP Shiver"],
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: "Shiver Broker",
     title: SEO.titleBlog,
-    description: "Artigos oficiais da corretora Shiver: plataforma, VIP, confiabilidade e investimentos.",
+    description: SEO.descriptionBlog,
     url: "/blog",
     images: [SEO.ogImage],
   },
   twitter: {
     card: "summary_large_image",
     title: SEO.titleBlog,
-    description: "Artigos oficiais da corretora Shiver: plataforma, VIP, confiabilidade e investimentos.",
+    description: SEO.descriptionBlog,
     images: [SEO.ogImage.url],
   },
 };
@@ -50,7 +42,7 @@ export default function BlogPage() {
               <p className="blog-kicker">Blog</p>
             </Reveal>
             <Reveal variant="left">
-              <h1>Últimas notícias e análises</h1>
+              <h1>{SEO.titleBlogH1}</h1>
             </Reveal>
             <Reveal variant="left" delay={80}>
               <p className="lead">

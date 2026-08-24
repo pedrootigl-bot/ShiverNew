@@ -338,13 +338,13 @@ export default function HomePage() {
 
       <section className="section sec-1" aria-label="Plataforma no notebook">
         <ScrollExpand
-          src="/media/shiver-platform-notebook.webp"
+          src="/media/shiver-platform-notebook.webp?v=2"
           alt="Plataforma da Shiver Broker no notebook"
           title="A plataforma"
           scrollHint="Role"
           useWindowScroll
           startWidth={64}
-          startHeight={48}
+          startHeight={38}
           startRadius={18}
           endRadius={0}
           mediaZoom={1.06}
@@ -660,16 +660,16 @@ export default function HomePage() {
                   Mercados globais
                 </li>
               </ul>
-              <div className="app-cta">
-                <CtaButton href={SITE.trade.trial} size="lg">
-                  Testar na plataforma <span aria-hidden>→</span>
-                </CtaButton>
-                <CtaButton href={SITE.trade.login} size="lg">
-                  Já tenho conta
-                </CtaButton>
-              </div>
           </AppCopyReveal>
           <AppMediaReveal />
+          <div className="app-cta">
+            <CtaButton href={SITE.trade.trial} size="lg" tone="blue">
+              Testar na plataforma <span aria-hidden>→</span>
+            </CtaButton>
+            <CtaButton href={SITE.trade.login} size="lg">
+              Já tenho conta
+            </CtaButton>
+          </div>
         </AppSplit>
       </AppSec>
 

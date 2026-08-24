@@ -311,7 +311,7 @@ export function ScrollExpand({
           src={src}
           alt={alt}
           width={1024}
-          height={576}
+          height={612}
           decoding="async"
           draggable={false}
         />
