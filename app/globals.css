@@ -2882,16 +2882,6 @@ html.blog-loading #conteudo {
   filter: blur(12px);
   pointer-events: none;
 }
-.blog-load-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(70, 193, 238, 0.14);
-  overflow: hidden;
-}
-.blog-load-bar span,
 .blog-load-track span {
   display: block;
   height: 100%;

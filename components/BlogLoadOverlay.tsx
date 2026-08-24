@@ -204,14 +204,17 @@ export function BlogLoadOverlay() {
       aria-labelledby="blog-load-title"
       style={{ "--blog-load-p": String(percent / 100) } as CSSProperties}
     >
-      <div className="blog-load-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent)}>
-        <span />
-      </div>
       <div className="blog-load-card">
         <img src="/icon.png" alt="" width={40} height={40} />
         <p id="blog-load-title">{listing ? "Abrindo os artigos" : "Abrindo o artigo"}</p>
         <small>Só um instante</small>
-        <div className="blog-load-track" aria-hidden="true">
+        <div
+          className="blog-load-track"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(percent)}
+        >
           <span />
         </div>
       </div>
