@@ -1,4 +1,6 @@
 Shiver Broker
+
+
 Este repositório é o site institucional da Shiver Broker, a corretora apresentada como “dos grandes tubarões”, com operação em forex, crypto e opções. Não é a plataforma de negociação em si: o cadastro, o login e a conta demo de dez mil dólares virtuais apontam para trade.shiverbroker.com. O que vive aqui é a vitrine pública em português, no ar em www.shiverbroker.com.
 
 A home conta a marca em sequência: o hero com o efeito de metal líquido, a seção de clareza sobre leitura de mercado, o porquê da Shiver, o payout, o preview de ativos, o passo a passo, depósito e saque, o programa VIP e o convite para levar o mesmo nível premium no celular. No desktop, o hero e a seção de clareza se ligam por um overlay de scroll com GSAP. No celular esse overlay não entra: as duas partes ficam uma abaixo da outra, com scroll nativo, para a página avançar sem travar o toque. O Lenis, que suaviza o scroll no desktop, também fica desligado em tela de toque.
