@@ -31,36 +31,58 @@ export function HeroStage({ overlayDriven = false }: { overlayDriven?: boolean }
 
   useEffect(() => {
     const el = wrap.current;
-    if (!el || overlayDriven) return;
+    if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.style.setProperty("--hero-p", "1");
-      el.style.setProperty("--hero-copy", "1");
-      el.classList.add("copy");
-      return;
-    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = window.matchMedia("(max-width: 900px)");
+    let stopScroll: (() => void) | undefined;
 
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const total = Math.max(el.offsetHeight - window.innerHeight, 1);
-      const p = Math.min(Math.max(-el.getBoundingClientRect().top / total, 0), 1);
-      const copy = Math.min(1, Math.max(0, (p - 0.08) / 0.5));
-      el.style.setProperty("--hero-p", p.toFixed(3));
-      el.style.setProperty("--hero-copy", copy.toFixed(3));
-      el.classList.toggle("copy", copy > 0.35);
+    const bindScroll = () => {
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const total = Math.max(el.offsetHeight - window.innerHeight, 1);
+        const p = Math.min(Math.max(-el.getBoundingClientRect().top / total, 0), 1);
+        const copy = Math.min(1, Math.max(0, (p - 0.08) / 0.5));
+        el.style.setProperty("--hero-p", p.toFixed(3));
+        el.style.setProperty("--hero-copy", copy.toFixed(3));
+        el.classList.toggle("copy", copy > 0.35);
+      };
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      };
+      update();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      };
     };
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
+
+    const sync = () => {
+      stopScroll?.();
+      stopScroll = undefined;
+      const overlayOwnsHero = overlayDriven && !mobile.matches && !reduce.matches;
+      if (overlayOwnsHero) return;
+      if (reduce.matches) {
+        el.style.setProperty("--hero-p", "1");
+        el.style.setProperty("--hero-copy", "1");
+        el.classList.add("copy");
+        return;
+      }
+      stopScroll = bindScroll();
     };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+
+    sync();
+    mobile.addEventListener("change", sync);
+    reduce.addEventListener("change", sync);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      mobile.removeEventListener("change", sync);
+      reduce.removeEventListener("change", sync);
+      stopScroll?.();
     };
   }, [overlayDriven]);
 

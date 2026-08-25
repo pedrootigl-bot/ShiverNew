@@ -16,6 +16,7 @@ export function AppBolsoVideo() {
     if (skipHeroMotion()) return;
 
     const playSafe = () => {
+      el.playbackRate = 1;
       void el.play().then(() => setLive(true)).catch(() => {});
     };
 
@@ -47,25 +48,25 @@ export function AppBolsoVideo() {
     <div ref={root} className={`app-media-stage${live ? " is-live" : ""}`}>
       <img
         className="app-media-poster"
-        src="/media/app-bolso.webp?v=2"
+        src="/media/app-bolso.webp?v=4"
         alt="Plataforma Shiver no celular, com mercados globais ao redor"
-        width={1646}
-        height={1080}
+        width={1232}
+        height={808}
         decoding="async"
         loading="lazy"
       />
       <video
         ref={video}
         className="app-media-video"
-        poster="/media/app-bolso.webp?v=2"
+        poster="/media/app-bolso.webp?v=4"
         muted
         loop
         playsInline
         preload="none"
         aria-hidden="true"
       >
-        <source src="/media/app-bolso.webm?v=2" type="video/webm" />
-        <source src="/media/app-bolso.mp4?v=2" type="video/mp4" />
+        <source src="/media/app-bolso.webm?v=4" type="video/webm" />
+        <source src="/media/app-bolso.mp4?v=4" type="video/mp4" />
       </video>
     </div>
   );
