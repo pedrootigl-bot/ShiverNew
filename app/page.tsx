@@ -583,7 +583,11 @@ export default function HomePage() {
                 <div className="pay-copy">
                   <p className="kicker">Depósito e saque</p>
                   <h2 id="titulo-liquidez">
-                    O dinheiro entra. O dinheiro sai. Sem <span className="accent">teatro</span>
+                    <span className="pay-title-line">O dinheiro entra.</span>
+                    <span className="pay-title-line">O dinheiro sai.</span>
+                    <span className="pay-title-line">
+                      Sem <span className="accent">teatro</span>
+                    </span>
                   </h2>
                   <p className="lead">
                     Mais de 9 métodos. Os depoimentos falam de saque que cai; aqui você vê o caminho — crypto, cartão e

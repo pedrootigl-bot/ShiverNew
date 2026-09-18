@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { posts } from "@/lib/blog";
 import { SITE } from "@/lib/site";
 
+export const dynamic = "force-static";
+export const revalidate = false;
+
 const LEGAL_UPDATED = new Date("2026-04-22");
 
 export default function sitemap(): MetadataRoute.Sitemap {

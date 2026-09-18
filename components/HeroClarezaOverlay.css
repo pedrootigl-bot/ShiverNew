@@ -378,12 +378,12 @@
   .clareza-overlay__panel.section {
     min-height: 0;
     height: auto;
-    padding: 72px 0 48px;
+    padding: 40px 0 36px;
     overflow: visible;
   }
 
   .clareza-overlay .hero {
-    height: 138svh;
+    height: 118svh;
     overflow: visible;
   }
 
@@ -392,8 +392,8 @@
     top: 0;
     inset: auto;
     height: 100svh;
-    padding: 72px 16px 16vh;
-    align-items: center;
+    padding: 56px 16px 10vh;
+    align-items: flex-end;
   }
 
   .clareza-overlay__scrim {
@@ -412,25 +412,30 @@
 
 @media (max-width: 720px) {
   .clareza-overlay .hero {
-    height: 122svh;
+    height: 100svh;
   }
 
   .clareza-overlay .hero-stage {
-    padding: 64px 14px 12vh;
+    padding: 52px 14px 28px;
+    align-items: flex-end;
   }
 
   .clareza-overlay__panel.section {
-    padding: 44px 0;
+    padding: 28px 0 36px;
   }
 }
 
 @media (max-width: 480px) {
   .clareza-overlay .hero {
-    height: 116svh;
+    height: 100svh;
+  }
+
+  .clareza-overlay .hero-stage {
+    padding: 48px 12px 22px;
   }
 
   .clareza-overlay__panel.section {
-    padding: 36px 0;
+    padding: 24px 0 32px;
   }
 }
 

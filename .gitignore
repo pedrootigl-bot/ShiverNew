@@ -1,5 +1,8 @@
 .git
 .next
+/out
+/dist
+/.preview-static
 node_modules
 *.log
 .DS_Store

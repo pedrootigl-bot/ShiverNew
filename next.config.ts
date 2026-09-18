@@ -1,12 +1,23 @@
 import type { NextConfig } from "next";
 
-const securityHeaders = [
-  { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "Referrer-Policy", value: "origin-when-cross-origin" },
-  { key: "X-DNS-Prefetch-Control", value: "on" },
-];
+/**
+ * Export estático para Hostinger (mesmo modelo Bull-ex).
+ * Produção na raiz: https://www.shiverbroker.com/
+ * Subpasta opcional: BASE_PATH=/minha-pasta npm run build
+ */
+const isDev = process.env.NODE_ENV === "development";
+const rawBasePath =
+  process.env.BASE_PATH !== undefined
+    ? process.env.BASE_PATH
+    : isDev
+      ? ""
+      : "";
+const basePath = rawBasePath === "/" ? "" : rawBasePath.replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
+  output: "export",
+  trailingSlash: true,
+  basePath,
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
@@ -21,6 +32,7 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 365,
     deviceSizes: [640, 750, 828, 1080, 1200, 1280, 1920],
@@ -31,43 +43,6 @@ const nextConfig: NextConfig = {
       { pathname: "/icon.png" },
       { pathname: "/og.png" },
     ],
-  },
-  async headers() {
-    const isDev = process.env.NODE_ENV !== "production";
-    if (isDev) {
-      return [
-        {
-          source: "/:path*",
-          headers: [
-            ...securityHeaders,
-            { key: "Cache-Control", value: "no-store, must-revalidate" },
-          ],
-        },
-        {
-          source: "/_next/static/:path*",
-          headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
-        },
-      ];
-    }
-
-    return [
-      {
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-      {
-        source: "/media/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
-      {
-        source: "/_next/static/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
-      {
-        source: "/:all*(ico|png|jpg|jpeg|webp|avif|woff2|mp4)",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
-      },
-    ];
   },
 };
 

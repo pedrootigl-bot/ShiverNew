@@ -61,7 +61,7 @@ export function PostArticle({ slug }: { slug: string }) {
               <span className="post-byline-role">{BLOG_AUTHOR.role}</span>
               <span aria-hidden> · </span>
               Publicado em <time dateTime={post.date}>{post.displayDate}</time>
-              {post.updated !== post.date ? (
+              {String(post.updated) !== String(post.date) ? (
                 <>
                   <span aria-hidden> · </span>
                   Atualizado em <time dateTime={post.updated}>{formatPostDate(post.updated)}</time>
