@@ -10,9 +10,10 @@ export function Reveal({
   children,
   className = "",
   delay = 0,
+  variant = "up",
   solo = false,
-  enterRatio = 0.1,
-  rootMargin = "0px",
+  enterRatio = 0.12,
+  rootMargin = "0px 0px -6% 0px",
 }: {
   children: ReactNode;
   className?: string;
@@ -30,7 +31,7 @@ export function Reveal({
   return (
     <div
       ref={independent ? own.ref : undefined}
-      className={`reveal${on ? " in" : ""} ${className}`.trim()}
+      className={`reveal reveal-${variant}${on ? " in" : ""}${className ? ` ${className}` : ""}`}
       style={{ "--d": `${delay}ms` } as CSSProperties}
     >
       {children}

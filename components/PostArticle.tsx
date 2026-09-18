@@ -55,18 +55,20 @@ export function PostArticle({ slug }: { slug: string }) {
           <Reveal variant="left" delay={80}>
             <h1>{post.title}</h1>
           </Reveal>
-          <p className="post-byline">
-            Por <Link href="/sobre">{BLOG_AUTHOR.name}</Link>
-            <span className="post-byline-role">{BLOG_AUTHOR.role}</span>
-            <span aria-hidden> · </span>
-            Publicado em <time dateTime={post.date}>{post.displayDate}</time>
-            {post.updated !== post.date ? (
-              <>
-                <span aria-hidden> · </span>
-                Atualizado em <time dateTime={post.updated}>{formatPostDate(post.updated)}</time>
-              </>
-            ) : null}
-          </p>
+          <Reveal variant="left" delay={100}>
+            <p className="post-byline">
+              Por <Link href="/sobre">{BLOG_AUTHOR.name}</Link>
+              <span className="post-byline-role">{BLOG_AUTHOR.role}</span>
+              <span aria-hidden> · </span>
+              Publicado em <time dateTime={post.date}>{post.displayDate}</time>
+              {post.updated !== post.date ? (
+                <>
+                  <span aria-hidden> · </span>
+                  Atualizado em <time dateTime={post.updated}>{formatPostDate(post.updated)}</time>
+                </>
+              ) : null}
+            </p>
+          </Reveal>
         </header>
         <Reveal variant="rise" delay={120}>
           <div className="post-cover">
@@ -84,22 +86,24 @@ export function PostArticle({ slug }: { slug: string }) {
           <div className="post-body" dangerouslySetInnerHTML={{ __html: html }} />
         </Reveal>
         {(prev || next) ? (
-          <nav className="post-pager" aria-label="Outros artigos">
-            {prev ? (
-              <Link href={`/blog/${prev.slug}`} prefetch={false}>
-                <small>Anterior</small>
-                <strong>{prev.navTitle}</strong>
-              </Link>
-            ) : (
-              <span />
-            )}
-            {next ? (
-              <Link href={`/blog/${next.slug}`} prefetch={false} className="post-pager-next">
-                <small>Próximo</small>
-                <strong>{next.navTitle}</strong>
-              </Link>
-            ) : null}
-          </nav>
+          <Reveal variant="up" delay={80} solo>
+            <nav className="post-pager" aria-label="Outros artigos">
+              {prev ? (
+                <Link href={`/blog/${prev.slug}`} prefetch={false}>
+                  <small>Anterior</small>
+                  <strong>{prev.navTitle}</strong>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {next ? (
+                <Link href={`/blog/${next.slug}`} prefetch={false} className="post-pager-next">
+                  <small>Próximo</small>
+                  <strong>{next.navTitle}</strong>
+                </Link>
+              ) : null}
+            </nav>
+          </Reveal>
         ) : null}
         <Reveal variant="scale" delay={220}>
           <div className="post-cta">
@@ -118,7 +122,7 @@ export function PostArticle({ slug }: { slug: string }) {
               {related.map((item, index) => {
                 const href = `/blog/${item.slug}`;
                 return (
-                  <Reveal key={item.slug} variant="rise" delay={160 + index * 120}>
+                  <Reveal key={item.slug} variant="rise" delay={index * 140} solo>
                     <Link
                       className="post-card"
                       href={href}

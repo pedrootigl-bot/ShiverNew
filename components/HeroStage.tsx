@@ -91,17 +91,18 @@ export function HeroStage({ overlayDriven = false }: { overlayDriven?: boolean }
       <div className="hero-stage">
         <HeroMetal />
         <div className="hero-vignette" />
-        <Image
-          className="float-layer fin"
-          src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
-          alt=""
-          width={1180}
-          height={611}
-          quality={70}
-          sizes="(max-width: 720px) 90vw, min(1180px, 100vw)"
-          style={{ height: "auto" }}
-        />
         <div className="hero-content">
+          <Image
+            className="float-layer fin"
+            src="/media/U4p7OneXSqlSqUjx2qEVzJYI8A.webp"
+            alt=""
+            width={1180}
+            height={611}
+            quality={70}
+            sizes="(max-width: 720px) 120vw, min(1180px, 100vw)"
+            style={{ height: "auto" }}
+            priority
+          />
           <div className="hero-left">
             <h1>Shiver Broker — o oceano está cheio. Os tubarões já escolheram o lado!</h1>
             <p className="kicker">A demanda é alta. A vaga é sua</p>

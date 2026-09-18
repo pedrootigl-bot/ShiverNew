@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { BootPreloader } from "@/components/BootPreloader";
 import { getLenis } from "@/lib/lenis-instance";
 
 function clamp(value: number, min: number, max: number) {
@@ -13,6 +14,36 @@ function clamp(value: number, min: number, max: number) {
 function readVh(raw: string, fallback: number) {
   const parsed = Number.parseFloat(raw);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+async function waitForHeaderReady() {
+  try {
+    await document.fonts?.ready;
+  } catch {
+    // ignore font readiness failures
+  }
+
+  const header = document.querySelector<HTMLElement>(".header .header-pill, .header");
+  if (!header) return;
+
+  await new Promise<void>((resolve) => {
+    const done = () => resolve();
+    if (header.getBoundingClientRect().height > 0) {
+      requestAnimationFrame(() => requestAnimationFrame(done));
+      return;
+    }
+    const io = new ResizeObserver(() => {
+      if (header.getBoundingClientRect().height > 0) {
+        io.disconnect();
+        requestAnimationFrame(() => requestAnimationFrame(done));
+      }
+    });
+    io.observe(header);
+    window.setTimeout(() => {
+      io.disconnect();
+      done();
+    }, 1200);
+  });
 }
 
 const OVERLAY_VARS = [
@@ -27,6 +58,8 @@ const OVERLAY_VARS = [
   "--ov-cards-y",
 ] as const;
 
+const PRELOADER_MIN_MS = 1800;
+
 export function HeroClarezaOverlay({
   hero,
   panel,
@@ -35,6 +68,7 @@ export function HeroClarezaOverlay({
   panel: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const dismissTimerRef = useRef(0);
   const [booting, setBooting] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [stacked, setStacked] = useState(false);
@@ -46,7 +80,7 @@ export function HeroClarezaOverlay({
     const heroEl = root.querySelector<HTMLElement>(".hero");
     const panelEl = root.querySelector<HTMLElement>("[data-overlay-panel]");
     if (!heroEl || !panelEl) {
-      setBooting(false);
+      void waitForHeaderReady().then(() => setBooting(false));
       return;
     }
 
@@ -61,23 +95,65 @@ export function HeroClarezaOverlay({
 
     const clearOverlayVars = () => {
       for (const key of OVERLAY_VARS) root.style.removeProperty(key);
-      root.classList.remove("is-live");
+      root.classList.remove("is-live", "is-panel-in");
     };
 
     let cancelled = false;
     let runtimeStop: (() => void) | undefined;
+    let panelRevealIO: IntersectionObserver | undefined;
+    let panelRevealed = false;
+
+    const revealPanel = () => {
+      if (panelRevealed || cancelled) return;
+      panelRevealed = true;
+      root.classList.add("is-panel-in");
+      panelRevealIO?.disconnect();
+      panelRevealIO = undefined;
+    };
+
+    const watchPanelReveal = () => {
+      panelRevealIO?.disconnect();
+      panelRevealed = false;
+      root.classList.remove("is-panel-in");
+
+      if (reduce.matches) {
+        revealPanel();
+        return;
+      }
+
+      panelRevealIO = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry) return;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.22) {
+            revealPanel();
+          }
+        },
+        { threshold: [0, 0.22, 0.4, 0.6], rootMargin: "0px 0px -12% 0px" },
+      );
+      panelRevealIO.observe(panelEl);
+    };
+
+    const dismissPreloader = async (bootAt: number) => {
+      await waitForHeaderReady();
+      if (cancelled) return;
+      const remain = Math.max(0, PRELOADER_MIN_MS - (performance.now() - bootAt));
+      window.clearTimeout(dismissTimerRef.current);
+      dismissTimerRef.current = window.setTimeout(() => {
+        if (!cancelled) setBooting(false);
+      }, remain);
+    };
 
     const startStatic = () => {
       root.classList.add("is-static");
       setStacked(true);
       clearOverlayVars();
       if (reduce.matches) revealHero();
-      const timer = window.setTimeout(() => {
-        if (!cancelled) setBooting(false);
-      }, 800);
+      watchPanelReveal();
+      void dismissPreloader(performance.now());
       return () => {
-        window.clearTimeout(timer);
-        root.classList.remove("is-static");
+        panelRevealIO?.disconnect();
+        panelRevealIO = undefined;
+        root.classList.remove("is-static", "is-panel-in");
       };
     };
 
@@ -108,11 +184,16 @@ export function HeroClarezaOverlay({
       root.style.setProperty("--ov-cards", cardsP.toFixed(3));
       root.style.setProperty("--ov-cards-y", `${((1 - cardsP) * 30).toFixed(1)}px`);
       root.classList.toggle("is-live", progress > 0.02 && progress < 0.98);
+      if (overlayP > 0.18) revealPanel();
     };
 
     const startOverlay = () => {
       root.classList.remove("is-static");
       setStacked(false);
+      panelRevealIO?.disconnect();
+      panelRevealIO = undefined;
+      panelRevealed = false;
+      root.classList.remove("is-panel-in");
       apply(0);
 
       let alive = true;
@@ -121,7 +202,6 @@ export function HeroClarezaOverlay({
       let unhookLenis: (() => void) | undefined;
       let wait: number | undefined;
       let stopWait: number | undefined;
-      let finishTimer = 0;
       let bootFailSafe = 0;
       let finished = false;
       const bootAt = performance.now();
@@ -129,10 +209,7 @@ export function HeroClarezaOverlay({
       const finishBoot = () => {
         if (finished || cancelled || !alive) return;
         finished = true;
-        const remain = Math.max(0, 800 - (performance.now() - bootAt));
-        finishTimer = window.setTimeout(() => {
-          if (!cancelled) setBooting(false);
-        }, remain);
+        void dismissPreloader(bootAt);
       };
 
       const boot = async () => {
@@ -182,7 +259,6 @@ export function HeroClarezaOverlay({
 
       return () => {
         alive = false;
-        window.clearTimeout(finishTimer);
         window.clearTimeout(bootFailSafe);
         if (wait) window.clearInterval(wait);
         if (stopWait) window.clearTimeout(stopWait);
@@ -204,6 +280,8 @@ export function HeroClarezaOverlay({
 
     return () => {
       cancelled = true;
+      window.clearTimeout(dismissTimerRef.current);
+      panelRevealIO?.disconnect();
       runtimeStop?.();
       mobile.removeEventListener("change", sync);
       reduce.removeEventListener("change", sync);
@@ -226,24 +304,7 @@ export function HeroClarezaOverlay({
     };
   }, [booting]);
 
-  const preloader = (
-    <div
-      className={`gsap-preloader${booting ? "" : " is-done"}`}
-      role="status"
-      aria-live="polite"
-      aria-busy={booting}
-      aria-label="Carregando"
-    >
-      <img
-        src="/media/preloader-fin.png"
-        alt=""
-        width={1376}
-        height={768}
-        decoding="sync"
-        fetchPriority="high"
-      />
-    </div>
-  );
+  const preloader = <BootPreloader done={!booting} />;
 
   return (
     <div className={`clareza-overlay${booting ? " is-booting" : ""}${stacked ? " is-static" : ""}`} id="plataforma" data-scroll-align="end" ref={rootRef}>

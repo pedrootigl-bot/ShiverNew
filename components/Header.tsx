@@ -12,6 +12,7 @@ import { CtaButton } from "@/components/CtaButton";
 export function Header() {
   const [open, setOpen] = useState(false);
   const [blogOpen, setBlogOpen] = useState(false);
+  const [entered, setEntered] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const blogRef = useRef<HTMLDivElement>(null);
@@ -109,8 +110,44 @@ export function Header() {
     return () => window.clearTimeout(timer);
   }, [pathname]);
 
+  useEffect(() => {
+    if (entered) return;
+    const html = document.documentElement;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const reveal = () => {
+      if (reduce) {
+        setEntered(true);
+        return;
+      }
+      requestAnimationFrame(() => setEntered(true));
+    };
+
+    if (!html.classList.contains("gsap-booting")) {
+      const timer = window.setTimeout(reveal, 40);
+      return () => window.clearTimeout(timer);
+    }
+
+    const observer = new MutationObserver(() => {
+      if (!html.classList.contains("gsap-booting")) {
+        observer.disconnect();
+        reveal();
+      }
+    });
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+    const failSafe = window.setTimeout(() => {
+      observer.disconnect();
+      reveal();
+    }, 4500);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(failSafe);
+    };
+  }, [entered]);
+
   return (
-    <header className="header">
+    <header className={`header${entered ? " is-in" : ""}`}>
       {open ? (
         <button className="nav-backdrop" type="button" aria-label="Fechar menu" onClick={() => setOpen(false)} />
       ) : null}

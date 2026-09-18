@@ -32,33 +32,47 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const [featured, ...rest] = postsByDate();
+
   return (
     <>
       <JsonLd data={blogIndexJsonLd()} />
-      <RevealGroup>
-        <div className="blog-page wrap">
+      <div className="blog-page wrap">
+        <RevealGroup>
           <header className="blog-head">
             <Reveal variant="blur">
-              <p className="blog-kicker">Blog</p>
+              <p className="blog-kicker">Conteúdo</p>
             </Reveal>
-            <Reveal variant="left">
+            <Reveal variant="left" delay={60}>
               <h1>{SEO.titleBlogH1}</h1>
             </Reveal>
-            <Reveal variant="left" delay={80}>
+            <Reveal variant="up" delay={120}>
               <p className="lead">
                 Plataforma, VIP, confiabilidade e o caminho até o primeiro saque — o que quem opera precisa ler agora.
               </p>
             </Reveal>
           </header>
-          <div className="blog-feed">
-            {postsByDate().map((post, index) => (
-              <Reveal key={post.slug} variant="rise" delay={120 + index * 90}>
-                <PostCard post={post} />
-              </Reveal>
-            ))}
-          </div>
+        </RevealGroup>
+
+        <div className="blog-feed">
+          {featured ? (
+            <Reveal variant="rise" className="featured" solo enterRatio={0.08}>
+              <PostCard post={featured} featured />
+            </Reveal>
+          ) : null}
+          {rest.map((post, index) => (
+            <Reveal
+              key={post.slug}
+              variant="rise"
+              delay={index * 140}
+              solo
+              enterRatio={0.08}
+            >
+              <PostCard post={post} />
+            </Reveal>
+          ))}
         </div>
-      </RevealGroup>
+      </div>
     </>
   );
 }

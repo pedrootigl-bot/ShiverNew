@@ -7,13 +7,19 @@ import type { Post } from "@/lib/blog";
 import { canPrefetch } from "@/lib/network";
 import { BLOG_AUTHOR } from "@/lib/site";
 
-export function PostCard({ post }: { post: Post }) {
+export function PostCard({
+  post,
+  featured = false,
+}: {
+  post: Post;
+  featured?: boolean;
+}) {
   const router = useRouter();
   const href = `/blog/${post.slug}`;
 
   return (
     <Link
-      className="blog-card"
+      className={`blog-card${featured ? " featured" : ""}`}
       href={href}
       prefetch={false}
       onPointerDown={() => {
@@ -25,8 +31,13 @@ export function PostCard({ post }: { post: Post }) {
           src={post.image}
           alt={post.title}
           fill
-          sizes="(max-width: 980px) 92vw, 810px"
+          sizes={
+            featured
+              ? "(max-width: 900px) 92vw, 640px"
+              : "(max-width: 900px) 92vw, 380px"
+          }
           quality={70}
+          priority={featured}
         />
       </span>
       <div className="blog-card-body">

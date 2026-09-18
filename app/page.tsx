@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { ASSETS, PAY_METHODS, SITE, TESTIMONIALS_A, TESTIMONIALS_B } from "@/lib/site";
+import { ASSETS, SITE, TESTIMONIALS_A, TESTIMONIALS_B } from "@/lib/site";
 import { homeJsonLd, SEO } from "@/lib/seo";
 import { HeroClarezaOverlay } from "@/components/HeroClarezaOverlay";
 import { HeroStage } from "@/components/HeroStage";
@@ -9,6 +9,7 @@ import { LazyAssetsGlobe } from "@/components/LazyAssetsGlobe";
 import { MarketPreview } from "@/components/MarketPreview";
 import { AppCopyReveal, AppMediaReveal, AppSec, AppSplit } from "@/components/AppSplitReveal";
 import { CtaButton } from "@/components/CtaButton";
+import { PayMethodsCarousel } from "@/components/PayMethodsCarousel";
 import { SectionScrollBlur } from "@/components/SectionScrollBlur";
 import { ScrollExpand } from "@/components/ScrollExpand";
 import { AssetLogo } from "@/components/AssetLogo";
@@ -237,27 +238,28 @@ export const dynamic = "force-static";
 export default function HomePage() {
   return (
     <>
-      <link rel="preload" as="image" href="/media/preloader-fin.png" fetchPriority="high" />
       <JsonLd data={homeJsonLd()} />
       <HeroClarezaOverlay
         hero={<HeroStage overlayDriven />}
         panel={
           <div className="wrap">
             <RevealGroup className="matter-grid">
-              <Reveal variant="left">
+              <Reveal variant="left" className="matter-copy-reveal">
                 <div className="matter-copy">
-                  <h2 id="titulo-corretora">
+                  <h2 id="titulo-corretora" className="matter-anim">
                     Tecnologia para ler o mercado com <span className="accent">clareza</span>
                   </h2>
-                  <p className="lead">
+                  <p className="lead matter-anim">
                     Dados em tempo real, algoritmos proprietários e uma interface intuitiva para transformar informação em
                     decisão. Mais performance, menos ruído, mais confiança.
                   </p>
-                  <CtaButton href={SITE.trade.register} className="matter-cta">
-                    Quero operar na Shiver <span aria-hidden>→</span>
-                  </CtaButton>
+                  <div className="matter-anim">
+                    <CtaButton href={SITE.trade.register} className="matter-cta">
+                      Quero operar na Shiver <span aria-hidden>→</span>
+                    </CtaButton>
+                  </div>
                   <ul className="matter-points">
-                    <li>
+                    <li className="matter-anim">
                       <span className="matter-point-ico" aria-hidden>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                           <path d="M3 12h4l2.2-6 3.6 12 2.2-6H21" />
@@ -265,7 +267,7 @@ export default function HomePage() {
                       </span>
                       Leitura em tempo real
                     </li>
-                    <li>
+                    <li className="matter-anim">
                       <span className="matter-point-ico" aria-hidden>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                           <path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" />
@@ -273,7 +275,7 @@ export default function HomePage() {
                       </span>
                       Execução rápida
                     </li>
-                    <li>
+                    <li className="matter-anim">
                       <span className="matter-point-ico" aria-hidden>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                           <circle cx="12" cy="12" r="8" />
@@ -286,7 +288,7 @@ export default function HomePage() {
                   </ul>
                 </div>
               </Reveal>
-              <Reveal variant="scale">
+              <Reveal variant="scale" delay={120} className="matter-visual-reveal">
                 <div className="matter-visual">
                   <div className="clareza-overlay__cards" data-overlay-cards>
                     <Image
@@ -299,7 +301,7 @@ export default function HomePage() {
                       sizes="(max-width: 1100px) 1px, 560px"
                     />
                     <ul className="matter-stats" aria-label="Latência média 8,7 ms, uptime 99,99% e performance acumulada de 27,34% no ano">
-                      <li className="matter-stat">
+                      <li className="matter-stat matter-anim">
                         <span className="matter-stat-ico" aria-hidden>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                             <circle cx="12" cy="12" r="8.2" />
@@ -310,7 +312,7 @@ export default function HomePage() {
                         <strong>8,7ms</strong>
                         <span className="matter-stat-hint">Execução ultra rápida</span>
                       </li>
-                      <li className="matter-stat">
+                      <li className="matter-stat matter-anim">
                         <span className="matter-stat-ico" aria-hidden>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                             <path d="M12 3 5 6.5v5.2c0 4.3 2.9 8.2 7 9.3 4.1-1.1 7-5 7-9.3V6.5L12 3Z" />
@@ -321,7 +323,7 @@ export default function HomePage() {
                         <strong>99,99%</strong>
                         <span className="matter-stat-hint">Estabilidade comprovada</span>
                       </li>
-                      <li className="matter-stat matter-stat-chart">
+                      <li className="matter-stat matter-stat-chart matter-anim">
                         <span className="matter-stat-ico" aria-hidden>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
                             <rect x="4" y="4" width="16" height="16" rx="3" />
@@ -346,7 +348,7 @@ export default function HomePage() {
 
       <div className="site-rest">
 
-      <section className="section" id="parceiros">
+      <section className="section features-sec" id="parceiros">
         <div className="wrap">
           <RevealGroup>
             <Reveal variant="blur">
@@ -361,8 +363,8 @@ export default function HomePage() {
             </Reveal>
             <div className="feature-grid">
               {FEATURES.map((item, i) => (
-                <Reveal key={item.title} variant="rise" delay={i * 120}>
-                  <article className="feature-card hover-lift">
+                <Reveal key={item.title} variant="rise" delay={i * 140} solo>
+                  <article className="feature-card">
                     <span className="feature-ico">{item.icon}</span>
                     <h3>{item.title}</h3>
                     <p>{item.text}</p>
@@ -507,12 +509,12 @@ export default function HomePage() {
                     "Cupons e condições que não aparecem no cadastro padrão",
                     "Premiações presenciais para quem já saiu da média",
                   ].map((text, i) => (
-                    <Reveal key={text} delay={i * 80}>
+                    <Reveal key={text} variant="rise" delay={i * 140} solo>
                       <article className="vip-box">{text}</article>
                     </Reveal>
                   ))}
                 </div>
-                <Reveal variant="scale" delay={180} className="vip-core-cell">
+                <Reveal variant="scale" delay={180} className="vip-core-cell" solo>
                   <div className="vip-core">
                     <Image className="hex hex-a" src="/media/z1qu5QGdoqssEJK9ggQKiA2isxo.webp" alt="Shiver Broker VIP" width={480} height={533} quality={65} sizes="(max-width: 900px) 70vw, 280px" style={{ height: "auto" }} loading="lazy" decoding="async" />
                     <Image className="hex hex-b" src="/media/Gw34m89DNsQ1R91V50KCkXAr3Q.webp" alt="Seja VIP" width={480} height={539} quality={65} sizes="(max-width: 900px) 50vw, 180px" style={{ height: "auto" }} loading="lazy" decoding="async" />
@@ -524,12 +526,12 @@ export default function HomePage() {
                     "Suporte gerenciado: você não entra na fila geral",
                     "Saques com prioridade, limite e ritmo de quem opera pesado",
                   ].map((text, i) => (
-                    <Reveal key={text} delay={i * 80}>
+                    <Reveal key={text} variant="rise" delay={i * 140} solo>
                       <article className="vip-box">{text}</article>
                     </Reveal>
                   ))}
                 </div>
-                <Reveal delay={240} className="vip-cta">
+                <Reveal variant="up" delay={200} className="vip-cta" solo>
                   <CtaButton href={SITE.trade.trial}>
                     Quero as vantagens VIP <span aria-hidden>→</span>
                   </CtaButton>
@@ -553,7 +555,7 @@ export default function HomePage() {
                 ["02", "Deposite quando quiser", "Mais de 9 métodos. Entre com a banca que cabe em você — a vaga na Shiver já é sua."],
                 ["03", "Opere onde o payout está", "380+ ativos e ferramentas que quem só assiste de fora não usa. A demanda está na tela."],
               ].map(([n, title, text], i) => (
-                <Reveal key={n} delay={i * 120}>
+                <Reveal key={n} variant="rise" delay={i * 160} solo>
                   <article className="card hover-lift">
                     <div className="step-n">{n}</div>
                     <h3>{title}</h3>
@@ -563,9 +565,11 @@ export default function HomePage() {
               ))}
             </div>
             <div className="app-cta">
-              <CtaButton href={SITE.trade.register}>
-                Criar minha conta <span aria-hidden>→</span>
-              </CtaButton>
+              <Reveal variant="up" delay={80} solo>
+                <CtaButton href={SITE.trade.register}>
+                  Criar minha conta <span aria-hidden>→</span>
+                </CtaButton>
+              </Reveal>
             </div>
           </RevealGroup>
         </div>
@@ -605,26 +609,7 @@ export default function HomePage() {
                 </div>
               </Reveal>
             </div>
-            <div className="pay-methods">
-              {PAY_METHODS.map((method) => (
-                <Reveal key={method.name} delay={80}>
-                  <article className="pay-method hover-lift">
-                    <Image
-                      src={method.image}
-                      alt={`Depósito via ${method.name} na Shiver Broker`}
-                      width={400}
-                      height={400}
-                      quality={65}
-                      sizes="(max-width: 720px) 70vw, 180px"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <h3>{method.name}</h3>
-                    <p>{method.text}</p>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
+            <PayMethodsCarousel />
             <Reveal variant="blur">
               <p className="pay-chips">Boleto · Stablecoins · TED · e outros métodos na plataforma</p>
               <p className="pay-note">Imagens ilustrativas de marketing. Os métodos disponíveis dependem da conta e da verificação.</p>
@@ -702,12 +687,16 @@ export default function HomePage() {
           </AppCopyReveal>
           <AppMediaReveal />
           <div className="app-cta">
-            <CtaButton href={SITE.trade.trial} size="lg" tone="blue">
-              Testar na plataforma <span aria-hidden>→</span>
-            </CtaButton>
-            <CtaButton href={SITE.trade.login} size="lg">
-              Já tenho conta
-            </CtaButton>
+            <Reveal variant="up" delay={160} solo>
+              <CtaButton href={SITE.trade.trial} size="lg" tone="blue">
+                Testar na plataforma <span aria-hidden>→</span>
+              </CtaButton>
+            </Reveal>
+            <Reveal variant="up" delay={240} solo>
+              <CtaButton href={SITE.trade.login} size="lg">
+                Já tenho conta
+              </CtaButton>
+            </Reveal>
           </div>
         </AppSplit>
       </AppSec>
@@ -722,15 +711,17 @@ export default function HomePage() {
                   "Exclusividade e domínio na palma da mão",
                   "A forma mais rápida de negociar ativos",
                   "A corretora mais lucrativa do mercado",
-                ].map((text) => (
-                  <article key={text} className="cta-pill">
-                    <span className="cta-pill-check" aria-hidden>
-                      <svg viewBox="0 0 20 20">
-                        <path d="M5 10.2 8.2 13.5 15 6.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <p>{text}</p>
-                  </article>
+                ].map((text, i) => (
+                  <Reveal key={text} variant="rise" delay={i * 120} solo>
+                    <article className="cta-pill">
+                      <span className="cta-pill-check" aria-hidden>
+                        <svg viewBox="0 0 20 20">
+                          <path d="M5 10.2 8.2 13.5 15 6.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                      <p>{text}</p>
+                    </article>
+                  </Reveal>
                 ))}
               </div>
             </Reveal>

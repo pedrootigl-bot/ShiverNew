@@ -2,6 +2,8 @@
 
 import { type ReactNode } from "react";
 import { AppBolsoVideo } from "@/components/AppBolsoVideo";
+import { Reveal } from "@/components/Reveal";
+import { RevealGroup } from "@/components/RevealGroup";
 
 export function AppSec({ children }: { children: ReactNode }) {
   return (
@@ -12,19 +14,27 @@ export function AppSec({ children }: { children: ReactNode }) {
 }
 
 export function AppSplit({ children }: { children: ReactNode }) {
-  return <div className="app-split">{children}</div>;
+  return (
+    <RevealGroup className="app-split">
+      {children}
+    </RevealGroup>
+  );
 }
 
 export function AppMediaReveal() {
   return (
-    <div className="app-media">
+    <Reveal variant="scale" delay={120} className="app-media">
       <div className="app-media-frame">
         <AppBolsoVideo />
       </div>
-    </div>
+    </Reveal>
   );
 }
 
 export function AppCopyReveal({ children }: { children: ReactNode }) {
-  return <div className="app-copy">{children}</div>;
+  return (
+    <Reveal variant="left" className="app-copy">
+      {children}
+    </Reveal>
+  );
 }
