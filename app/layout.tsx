@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import Script from "next/script";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -20,6 +20,14 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-serif",
+  preload: true,
+  adjustFontFallback: true,
+});
+
 export const metadata: Metadata = defaultMetadata;
 
 export const viewport: Viewport = {
@@ -32,7 +40,7 @@ const jsonLd = organizationJsonLd();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
+    <html lang="pt-BR" className={`${inter.variable} ${sourceSerif.variable}`}>
       <head>
         <link rel="dns-prefetch" href="https://trade.shiverbroker.com" />
         <JsonLd data={jsonLd} />
