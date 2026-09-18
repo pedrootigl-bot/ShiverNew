@@ -67,7 +67,8 @@ export function HeroStage({ overlayDriven = false }: { overlayDriven?: boolean }
       stopScroll = undefined;
       const overlayOwnsHero = overlayDriven && !mobile.matches && !reduce.matches;
       if (overlayOwnsHero) return;
-      if (reduce.matches) {
+      // Mobile: copy já nasce no topo (sem scroll-reveal / slide de baixo).
+      if (mobile.matches || reduce.matches) {
         el.style.setProperty("--hero-p", "1");
         el.style.setProperty("--hero-copy", "1");
         el.classList.add("copy");

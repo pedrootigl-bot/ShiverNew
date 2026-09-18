@@ -148,7 +148,7 @@ export function HeroClarezaOverlay({
       setStacked(true);
       clearOverlayVars();
       if (reduce.matches) revealHero();
-      watchPanelReveal();
+      revealPanel();
       void dismissPreloader(performance.now());
       return () => {
         panelRevealIO?.disconnect();

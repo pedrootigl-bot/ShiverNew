@@ -3508,6 +3508,15 @@ html.blog-loading #conteudo {
   animation: matter-enter 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--matter-d, 0ms) both;
 }
 
+.clareza-overlay.is-static .matter-anim,
+.clareza-overlay.is-static .reveal {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  clip-path: none;
+  animation: none;
+}
+
 .clareza-overlay.is-static.is-panel-in .matter-cards {
   animation: matter-visual-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
@@ -4185,6 +4194,10 @@ html.blog-loading #conteudo {
     margin-top: 0;
     width: 100%;
   }
+  .matter-grid .matter-copy > .matter-anim:has(.matter-cta) {
+    order: 4;
+    margin-top: 12px;
+  }
   .matter-grid .matter-visual {
     order: 5;
     min-height: 0;
@@ -4308,26 +4321,50 @@ html.blog-loading #conteudo {
   .footer-docs { grid-template-columns: 1fr 1fr; }
   .footer-cta .btn { flex: 1; min-height: 48px; }
   .hero {
-    height: 118svh;
+    height: auto;
     padding: 0;
   }
+  .hero::after {
+    height: 28px;
+  }
   .hero-stage {
-    padding: 56px 16px 10vh 16px;
-    align-items: flex-end;
+    position: relative;
+    height: auto;
+    min-height: 0;
+    padding: max(72px, calc(env(safe-area-inset-top, 0px) + 56px)) 16px 12px;
+    align-items: flex-start;
+  }
+  .hero-video,
+  .hero-vignette {
+    inset: auto;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    top: max(52px, calc(env(safe-area-inset-top, 0px) + 36px));
+    height: min(42vh, 320px);
+    z-index: 0;
   }
   .hero-content {
-    gap: 20px;
+    gap: 12px;
     opacity: 1;
     transform: none;
     pointer-events: auto;
+    align-self: start;
+    align-items: start;
+    align-content: start;
+    z-index: 3;
+    padding-bottom: min(10vw, 48px);
+  }
+  .fin {
+    z-index: 1;
   }
   .hero-left,
   .hero-right {
-    animation: hero-copy-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: none;
   }
-  .hero-right { animation-delay: 0.14s; }
   .hero h1 { font-size: clamp(26px, 8vw, 38px); line-height: 1.12; }
-  .hero .lead { font-size: 16px; margin-bottom: 20px; }
+  .hero .kicker { margin-top: 10px; }
+  .hero .lead { font-size: 16px; margin: 0 0 16px; }
   .hero .btn,
   .payout-cta-cell .btn,
   .vip-cta .btn,
@@ -4381,9 +4418,9 @@ html.blog-loading #conteudo {
     max-width: none;
     left: 50%;
     right: auto;
-    top: 38%;
+    top: 0;
     bottom: auto;
-    transform: translate3d(-50%, -46%, 0) scale(calc(1 - var(--hero-p) * 0.1));
+    transform: translate3d(-50%, 8%, 0) scale(calc(1 - var(--hero-p) * 0.1));
   }
   .crystal-l, .crystal-r { display: none; }
   .section { padding: 56px 0; }
@@ -4560,20 +4597,29 @@ html.blog-loading #conteudo {
   }
   .section { padding: 44px 0; }
   .hero {
-    height: 100svh;
+    height: auto;
   }
   .hero-stage {
-    padding: 52px 14px 28px 14px;
-    align-items: flex-end;
+    height: auto;
+    padding: max(64px, calc(env(safe-area-inset-top, 0px) + 52px)) 14px 10px;
+    align-items: flex-start;
+  }
+  .hero-video,
+  .hero-vignette {
+    top: max(48px, calc(env(safe-area-inset-top, 0px) + 32px));
+    height: min(38vh, 280px);
   }
   .hero h1 { font-size: clamp(24px, 7.6vw, 34px); }
-  .hero .lead { font-size: 15px; margin-bottom: 14px; }
-  .hero-content { gap: 12px; }
+  .hero .kicker { margin-top: 8px; }
+  .hero .lead { font-size: 15px; margin: 0 0 14px; }
+  .hero-content { gap: 10px; align-self: start; align-content: start; }
   .fin {
     width: min(620px, 158%);
     height: auto;
-    top: 36%;
+    top: 0;
+    bottom: auto;
     opacity: 0.9;
+    transform: translate3d(-50%, 4%, 0) scale(calc(1 - var(--hero-p) * 0.1));
   }
   .grid-4, .features, .footer-grid, .post-grid, .feature-grid, .plan-grid, .blog-feed {
     grid-template-columns: 1fr;
@@ -4716,10 +4762,16 @@ html.blog-loading #conteudo {
 
 @media (max-width: 480px) {
   .wrap { padding: 0 12px; }
-  .hero { height: 100svh; }
+  .hero { height: auto; }
   .hero-stage {
-    padding: 48px 12px 22px 12px;
-    align-items: flex-end;
+    height: auto;
+    padding: max(58px, calc(env(safe-area-inset-top, 0px) + 48px)) 12px 8px;
+    align-items: flex-start;
+  }
+  .hero-video,
+  .hero-vignette {
+    top: max(44px, calc(env(safe-area-inset-top, 0px) + 28px));
+    height: min(34vh, 240px);
   }
   .hero h1 { font-size: clamp(22px, 8.2vw, 30px); line-height: 1.14; }
   .logo span { font-size: 13px; }
@@ -4754,9 +4806,6 @@ html.blog-loading #conteudo {
     transition: none !important;
   }
   .hero-video video { display: none; }
-  .hero {
-    height: 100svh;
-  }
   .hero-content {
     opacity: 1;
     transform: none;
