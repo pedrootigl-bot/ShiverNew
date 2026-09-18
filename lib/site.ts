@@ -7,7 +7,8 @@ export const SITE = {
     "Shiver Broker (Shiver) é a corretora dos grandes tubarões: forex, crypto e opções com payout de até 97%. Abra conta ou teste a plataforma com $10.000 virtuais.",
   trade: {
     login: "https://trade.shiverbroker.com/pt/login",
-    register: "https://trade.shiverbroker.com/pt/register",
+    register:
+      "https://trade.shiverbroker.com/register?aff=822546&aff_model=revenue&afftrack=pg_alternativa_shiver",
     trial: "https://trade.shiverbroker.com/trial",
   },
   company: {
