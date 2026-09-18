@@ -539,8 +539,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       <section className="section" id="comofunciona">
         <div className="wrap">
           <RevealGroup>
